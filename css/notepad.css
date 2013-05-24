@@ -1,0 +1,217 @@
+#page-mod-notepad-session #page-header {
+	display: none;
+}
+
+#page-mod-notepad-session .mform .fitem .fitemtitle {
+	width: 150px;
+}
+
+#page-mod-notepad-session .mform .fitem .felement {
+	margin-left: 0;
+}
+
+#page-mod-notepad-session .mform .fitem .fsubmit {
+	text-align: center;
+} 
+
+fieldset#session-notepad {
+	/* background: url(images/lyx.png) 680px 30px no-repeat;  */
+}
+
+.mform ol.notepad .fitem .felement {
+	margin-left: 0;
+}
+
+.mform ol.notepad .fitem .fitemtitle {
+	display: none;
+}
+
+ol.notepad li {
+	margin-bottom: 10px;
+}
+
+table.probes,
+table.activities  {
+	width: 750px;
+	border: 1px solid #bebebe;
+	margin: 20px 0;
+}
+
+table.probes td, 
+table.activities td {
+	border: 1px solid #bebebe;
+	vertical-align: top;
+	padding-top: 7px;
+}
+
+table.probes th,
+table.activities th {
+	border: 1px solid #bebebe;
+	background-color: #dcdcdc;
+}
+
+table.probes td.probe-name, 
+table.activities td.activity-name {
+	width: 200px;
+}
+
+table.probes td.probe-usage, 
+table.activities td.activity-usage {
+	width: 150px;
+}
+
+table.probes td.probe-plans, 
+table.activities td.activity-plans {
+	width: 400px;
+}
+
+
+.mform td.probe-usage .fitem fieldset.felement,
+.mform td.activity-usage .fitem fieldset.felement {
+	padding-left: 0;
+}
+
+table.probes input[type="radio"],
+table.activities input[type="radio"] {
+	margin-right: 3px;
+	margin-left: 7px;
+}
+
+.mform table.probes .fitem .felement,
+.mform table.activities .fitem .felement {
+	width: 95%;
+}
+
+.mform table.probes .fitem .fitemtitle,
+.mform table.activities .fitem .fitemtitle {
+	display: none;
+}
+
+ul li.session-prompts {
+	float: left;
+	width: 45%;
+}
+
+.notepad-session-main ul li{
+	list-style: none;
+	width: 70%;
+}
+
+#directions {
+	width: 600px;
+	margin: 20px 0;
+}
+
+.notepad-session-list {
+	float: right;
+}
+
+.notepad-session-list ul li {
+	display: inline;
+}
+
+.notepad-session-list ul li:after {
+	content: " | ";
+	font-weight: bold;
+}
+
+.notepad-session-list ul li.last:after {
+	content: "";
+}
+
+
+span.session-name  {
+	float: left;
+	width: 150px;
+}
+
+.notepad-action-links {
+    margin: 20px auto;
+    text-align: center;
+}
+
+.notepad-action-links span {
+    padding: 3px 10px;
+    margin: 0 5px;
+    border: 1px solid #eeeeee;
+    background-color: #FAF4D9;
+    border-radius: 10px;
+}
+
+.notepad-action-links span:hover {
+	background-color: #eeeeee;
+}
+
+.message {
+	color: green;
+	margin: 30px 0;
+
+		
+}
+
+
+/* print css */
+
+.print-notepad {
+	float: right;
+	text-align: right;
+	padding-top: 35px;
+	width: 28%;
+}
+
+.notepad-print .session {
+	border: 1px solid #dddddd;
+	padding: 10px;
+	margin: 10px 0;
+}
+
+table.print {
+	width: 750px;
+}
+
+table.print td,
+table.print th {
+	border: 1px solid #dddddd;
+}
+
+table.print th {
+	background-color: #eeeeee;
+}
+
+.notepad-print  li p,
+.notepad-print li table {
+	margin-top: 15px;
+}
+
+table.print td.name {
+	width: 300px;
+}
+
+table.print td.use {
+	width: 30px
+}
+
+table.print td.plans {
+	width: 400px;
+}
+
+#back-link {
+	float: right;
+	text-align: right;
+	width: 250px;
+}
+
+
+
+@media print
+  {
+  body { 
+  	font-size: 115% ; 
+  }
+  
+  #back-link,
+  #page-header { 
+  	display:none; 
+  }
+
+  }

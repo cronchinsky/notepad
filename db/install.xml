@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/notes/db" VERSION="20130521" COMMENT="XMLDB file for Moodle mod/notes.  Create for DPD project"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="notepad" COMMENT="notepad activity" NEXT="notepad_sessions">
+      <FIELDS>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course notes activity belongs to" NEXT="id"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" PREVIOUS="course" NEXT="name"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" PREVIOUS="id" NEXT="intro"/>
+        <FIELD NAME="intro" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="General introduction of the notes activity" PREVIOUS="name" NEXT="introformat"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)" PREVIOUS="intro" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="introformat" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated" NEXT="display"/>
+        <FIELD NAME="display" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="timemodified" NEXT="popupwidth"/>
+        <FIELD NAME="popupwidth" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="display" NEXT="popupheight"/>
+        <FIELD NAME="popupheight" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="popupwidth" NEXT="grade"/>
+        <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="popupheight"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="notepad_sessions" COMMENT="Table for individual sessions of the notepad" PREVIOUS="notepad" NEXT="notepad_probes">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="nid"/>
+        <FIELD NAME="nid" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="notes id" PREVIOUS="id" NEXT="name"/>
+        <FIELD NAME="name" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="Session name" PREVIOUS="nid" NEXT="directions"/>
+        <FIELD NAME="directions" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="Directions for the session" PREVIOUS="name"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="notepad_probes" COMMENT="Table for the probes in each session" PREVIOUS="notepad_sessions" NEXT="notepad_activities">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="sid"/>
+        <FIELD NAME="sid" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Session id" PREVIOUS="id" NEXT="name"/>
+        <FIELD NAME="name" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" PREVIOUS="sid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="notepad_activities" COMMENT="notepad activities" PREVIOUS="notepad_probes" NEXT="notepad_probe_responses">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="sid"/>
+        <FIELD NAME="sid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Session id" PREVIOUS="id" NEXT="name"/>
+        <FIELD NAME="name" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" COMMENT="Name" PREVIOUS="sid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="notepad_probe_responses" COMMENT="Keeps the notes" PREVIOUS="notepad_activities" NEXT="notepad_question_responses">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="pid"/>
+        <FIELD NAME="pid" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="The probe in notes_probes" PREVIOUS="id" NEXT="uid"/>
+        <FIELD NAME="uid" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="User id" PREVIOUS="pid" NEXT="plans"/>
+        <FIELD NAME="plans" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="The plans for the probe" PREVIOUS="uid" NEXT="useradio"/>
+        <FIELD NAME="useradio" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Usage: yes, no, maybe (y, n, m)" PREVIOUS="plans"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="notepad_question_responses" COMMENT="Text responses" PREVIOUS="notepad_probe_responses" NEXT="notepad_activity_responses">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="sid"/>
+        <FIELD NAME="sid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Session id" PREVIOUS="id" NEXT="qid"/>
+        <FIELD NAME="qid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Session ID" PREVIOUS="sid" NEXT="uid"/>
+        <FIELD NAME="uid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="User ID" PREVIOUS="qid" NEXT="response"/>
+        <FIELD NAME="response" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="the response to the question" PREVIOUS="uid" NEXT="submit_session"/>
+        <FIELD NAME="submit_session" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Setting for participants to indicate session ready for review by facilitators" PREVIOUS="response"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="notepad_activity_responses" COMMENT="Activity responses" PREVIOUS="notepad_question_responses" NEXT="notepad_entries">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="aid"/>
+        <FIELD NAME="aid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Activity id" PREVIOUS="id" NEXT="uid"/>
+        <FIELD NAME="uid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="User ID" PREVIOUS="aid" NEXT="plans"/>
+        <FIELD NAME="plans" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="Plans" PREVIOUS="uid" NEXT="useradio"/>
+        <FIELD NAME="useradio" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Use activity (y, n, m)" PREVIOUS="plans"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="notepad_entries" COMMENT="Keeps track of who has started a notes" PREVIOUS="notepad_activity_responses" NEXT="notepad_questions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="notepad"/>
+        <FIELD NAME="notepad" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="id of the notes" PREVIOUS="id" NEXT="uid"/>
+        <FIELD NAME="uid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="User ID" PREVIOUS="notepad" NEXT="modified"/>
+        <FIELD NAME="modified" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="uid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="notepad_questions" COMMENT="Text questions for the notes" PREVIOUS="notepad_entries">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="sid"/>
+        <FIELD NAME="sid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Session id in the notes" PREVIOUS="id" NEXT="question"/>
+        <FIELD NAME="question" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="The text questions" PREVIOUS="sid" NEXT="weight"/>
+        <FIELD NAME="weight" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" COMMENT="to enable reordering of questions" PREVIOUS="question"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
