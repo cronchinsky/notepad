@@ -153,7 +153,7 @@ $mform->display();
 
 echo "</div>";
 echo "<div class='notepad-action-links'>";
-echo '<span class="notepad-back-link-box"><a href="view.php?id=' . $cm->id . '">Back to the notepad</a></span>';
+echo '<span class="notepad-back-link-box"><a href="view.php?id=' . $cm->id . '">Back to the Notebook</a></span>';
 echo "</div>";
 echo "</div>";
 

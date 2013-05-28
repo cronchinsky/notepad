@@ -6,6 +6,10 @@
 	width: 150px;
 }
 
+#page-mod-notepad-session .mform .fitem {
+	margin-top: 10px;
+}
+
 #page-mod-notepad-session .mform .fitem .felement {
 	margin-left: 0;
 }
@@ -14,6 +18,13 @@
 	text-align: center;
 } 
 
+#page-mod-notepad-session h2.main {
+	background-image: url("images/notebook_60px.png");
+	background-repeat: no-repeat;
+	padding-left: 65px;
+	line-height: 60px; 
+	text-align: left;
+}
 fieldset#session-notepad {
 	/* background: url(images/lyx.png) 680px 30px no-repeat;  */
 }
@@ -147,6 +158,13 @@ span.session-name  {
 	margin: 30px 0;
 
 		
+}
+
+
+
+#page-mod-notepad-session #frametop, 
+#page-mod-notepad-session #footerframetop {
+	min-width: 750px;
 }
 
 
