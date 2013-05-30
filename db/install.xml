@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/notes/db" VERSION="20130521" COMMENT="XMLDB file for Moodle mod/notes.  Create for DPD project"
+<XMLDB PATH="mod/notes/db" VERSION="20130530" COMMENT="XMLDB file for Moodle mod/notes.  Create for DPD project"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -70,9 +70,8 @@
     </TABLE>
     <TABLE NAME="notepad_question_responses" COMMENT="Text responses" PREVIOUS="notepad_probe_responses" NEXT="notepad_activity_responses">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="sid"/>
-        <FIELD NAME="sid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Session id" PREVIOUS="id" NEXT="qid"/>
-        <FIELD NAME="qid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Session ID" PREVIOUS="sid" NEXT="uid"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="qid"/>
+        <FIELD NAME="qid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Session ID" PREVIOUS="id" NEXT="uid"/>
         <FIELD NAME="uid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="User ID" PREVIOUS="qid" NEXT="response"/>
         <FIELD NAME="response" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="the response to the question" PREVIOUS="uid" NEXT="submit_session"/>
         <FIELD NAME="submit_session" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Setting for participants to indicate session ready for review by facilitators" PREVIOUS="response"/>
