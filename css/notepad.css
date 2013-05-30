@@ -25,6 +25,11 @@
 	line-height: 60px; 
 	text-align: left;
 }
+
+.notepad-session-main li img {
+	float: none;
+}
+
 fieldset#session-notepad {
 	/* background: url(images/lyx.png) 680px 30px no-repeat;  */
 }
