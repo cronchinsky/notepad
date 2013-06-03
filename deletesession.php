@@ -68,7 +68,11 @@ if ($confirm && $sid) {
     $DB->delete_records('notepad_activities', array('sid' => $session->id));
   }
   
-  $DB->delete_records('notepad_text_responses', array('sid' => $session->id));
+  $questions = $DB->get_records('notepad_questions',array('sid' => $session->id));
+  if ($questions)  {
+  	$DB->delete_records_list('notepad_question_responses', 'qid', array_keys($questions));
+    $DB->delete_records('notepad_questions', array('sid' => $session->id));
+  }
   
   $DB->delete_records('notepad_sessions',array('id' => $session->id));
   
