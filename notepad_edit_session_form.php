@@ -14,7 +14,6 @@ class notepad_edit_session_form extends moodleform {
         $mform->addRule('name', 'This field is required', 'required');
         $mform->addElement('textarea', 'directions', get_string('directions', 'notepad'),'wrap="virtual" rows="3" cols="65"');
         $mform->addElement('textarea', 'prompts', get_string('session_prompts', 'notepad'),'wrap="virtual" rows="3" cols="65"');
-		$mform->setDefault('prompts', 'Before I thought..., now I think... | I am wondering... | I was surprised... | I felt affirmed by...');
           
         $this->add_action_buttons();
     }                           

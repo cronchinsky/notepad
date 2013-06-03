@@ -45,11 +45,11 @@ if (!$session) {
 }
 
 if ($newSave) {
-	$message = '<h3>Your notepad session has been saved.</h3>';
+	$message = '<h3>Your notebook session has been saved.</h3>';
 }
 
 if ($ready) {
-	$message .= '<h3>Your notepad session has been submitted to facilitators.</h3>';
+	$message .= '<h3>Your notebook session has been submitted to facilitators.</h3>';
 }
 
 // Load the notepad activity, course, and cm context from the problem, and up the chain.

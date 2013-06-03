@@ -110,7 +110,6 @@ ul li.session-prompts {
 
 .notepad-session-main ul li{
 	list-style: none;
-	width: 70%;
 }
 
 #directions {
@@ -138,7 +137,7 @@ ul li.session-prompts {
 
 span.session-name  {
 	float: left;
-	width: 150px;
+	width: 275px;
 }
 
 .notepad-action-links {

@@ -75,7 +75,7 @@ echo $OUTPUT->header();
 
 $nid = $notepad->id;
 
-$sessions = $DB->get_records('notepad_sessions', array('nid' => $nid));
+$sessions = $DB->get_records('notepad_sessions', array('nid' => $nid), 'id');
 
 if ($sessions) {
   echo $OUTPUT->heading($notepad->name);
