@@ -110,6 +110,12 @@ ul li.session-prompts {
 
 .notepad-session-main ul li{
 	list-style: none;
+	margin-bottom: 6px;
+	padding: 2px;
+}
+
+.notepad-session-main ul li.odd {
+	background-color: #eeeeee;
 }
 
 #directions {
@@ -125,6 +131,8 @@ ul li.session-prompts {
 	display: inline;
 }
 
+
+
 .notepad-session-list ul li:after {
 	content: " | ";
 	font-weight: bold;
@@ -137,7 +145,7 @@ ul li.session-prompts {
 
 span.session-name  {
 	float: left;
-	width: 275px;
+	width: 400px;
 }
 
 .notepad-action-links {
@@ -222,7 +230,6 @@ table.print td.plans {
 	text-align: right;
 	width: 250px;
 }
-
 
 
 @media print

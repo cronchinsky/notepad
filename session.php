@@ -54,7 +54,7 @@ if ($ready) {
 
 // Load the notepad activity, course, and cm context from the problem, and up the chain.
 $notepad = $DB->get_record('notepad', array('id' => $session->nid));
-$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id));
+$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id), 'id');
 
 $entry = $DB->get_record("notepad_entries", array("uid" => $USER->id, "notepad" => $notepad->id));
 

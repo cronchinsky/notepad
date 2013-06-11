@@ -86,17 +86,18 @@ if ($sessions) {
   echo "<div class='notepad-session-main'>";
   echo "<h4>Select a session:</h4>";
   echo "<ul>";
+  $row = true;
   foreach ($sessions as $session) {
-    
+     (($c = !$c) ?  $row_class= "odd" : $row_class="even");
      if (has_capability('mod/notepad:edit', $context)) {
-      echo '<li><span class="session-name"><a href="' . $CFG->wwwroot . '/mod/notepad/session.php?id=' . $session->id . '">' . $session->name . '</a></span>';
+      echo '<li class="'. $row_class. '"><span class="session-name"><a href="' . $CFG->wwwroot . '/mod/notepad/session.php?id=' . $session->id . '">' . $session->name . '</a></span>';
       echo " &nbsp;&nbsp;<a href='editquestions.php?sid=$session->id'> questions <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";
       echo " &nbsp;&nbsp;<a href='editprobes.php?sid=$session->id'> probes <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";
       echo " &nbsp;&nbsp;<a href='editactivities.php?sid=$session->id'> activities <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";
       echo " &nbsp;&nbsp;<a href='editsession.php?sid=$session->id&nid=$nid'> session <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";
       echo " &nbsp;&nbsp;<a href='deletesession.php?sid=$session->id'> delete <img src='" . $OUTPUT->pix_url('t/delete') . "' alt='delete' /></a>";
     } else {
-    	echo '<li><span class="session"><a href="' . $CFG->wwwroot . '/mod/notepad/session.php?id=' . $session->id . '">' . $session->name . '</a></span>';
+    	echo '<li class="'.$row_class. '"><span class="session"><a href="' . $CFG->wwwroot . '/mod/notepad/session.php?id=' . $session->id . '">' . $session->name . '</a></span>';
     }
     
     echo '</li>';
