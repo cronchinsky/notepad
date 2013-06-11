@@ -52,6 +52,7 @@ else {
 require_login($course, true, $cm);
 $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 add_to_log($course->id, 'notepad', 'view', "editsession.php?sid=$sid&nid=$nid", $session->name, $cm->id);
+notepad_debug($session);
 
 
 // Only editors can see this page.
@@ -82,7 +83,7 @@ else {
   // If there's data in the form...
   if ($results = $mform->get_data()) {
       $session->name = $results->name;
-      $session->prompts = $results->prompts;
+      $session->weight = $results->weight;
       $session->directions = $results->directions;
       $updated_record = $DB->update_record('notepad_sessions', $session);
       

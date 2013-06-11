@@ -75,7 +75,7 @@ echo $OUTPUT->header();
 
 $nid = $notepad->id;
 
-$sessions = $DB->get_records('notepad_sessions', array('nid' => $nid), 'id');
+$sessions = $DB->get_records('notepad_sessions', array('nid' => $nid), 'weight');
 
 if ($sessions) {
   echo $OUTPUT->heading($notepad->name);
@@ -88,7 +88,7 @@ if ($sessions) {
   echo "<ul>";
   $row = true;
   foreach ($sessions as $session) {
-     (($c = !$c) ?  $row_class= "odd" : $row_class="even");
+     (($row = !$row) ?  $row_class= "odd" : $row_class="even");
      if (has_capability('mod/notepad:edit', $context)) {
       echo '<li class="'. $row_class. '"><span class="session-name"><a href="' . $CFG->wwwroot . '/mod/notepad/session.php?id=' . $session->id . '">' . $session->name . '</a></span>';
       echo " &nbsp;&nbsp;<a href='editquestions.php?sid=$session->id'> questions <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";

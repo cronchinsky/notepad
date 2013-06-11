@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/notes/db" VERSION="20130530" COMMENT="XMLDB file for Moodle mod/notes.  Create for DPD project"
+<XMLDB PATH="mod/notes/db" VERSION="20130610" COMMENT="XMLDB file for Moodle mod/notes.  Create for DPD project"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -30,7 +30,8 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="nid"/>
         <FIELD NAME="nid" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="notes id" PREVIOUS="id" NEXT="name"/>
         <FIELD NAME="name" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="Session name" PREVIOUS="nid" NEXT="directions"/>
-        <FIELD NAME="directions" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="Directions for the session" PREVIOUS="name"/>
+        <FIELD NAME="directions" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="Directions for the session" PREVIOUS="name" NEXT="weight"/>
+        <FIELD NAME="weight" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="directions"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

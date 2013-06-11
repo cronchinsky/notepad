@@ -82,7 +82,8 @@ else if ($results = $mform->get_data()) {
   $session->nid = $nid;
   $session->name = $results->session_name;
   $session->directions = $results->directions;
-   
+  $session->weight = $results->weight;
+  
   $DB->insert_record('notepad_sessions', $session);
   redirect("view.php?n={$notepad->id}");
 }

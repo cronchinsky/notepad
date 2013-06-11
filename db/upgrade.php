@@ -58,6 +58,22 @@ function xmldb_notepad_upgrade($oldversion) {
         // notepad savepoint reached
         upgrade_mod_savepoint(true, 2012100200, 'notepad');
     }
+    
+    if ($oldversion < 2012100206) {
+
+        // Define field directions to be added to notepad_sessions
+        $table = new xmldb_table('notepad_sessions');
+        $field = new xmldb_field('weight', XMLDB_TYPE_INTEGER, '5', null, null, null, 0, 'directions');
+
+        // Conditionally launch add field directions
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // notepad savepoint reached
+        upgrade_mod_savepoint(true, 2012100206, 'notepad');
+    }
+
 
 
 
