@@ -52,8 +52,6 @@ else {
 require_login($course, true, $cm);
 $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 add_to_log($course->id, 'notepad', 'view', "editsession.php?sid=$sid&nid=$nid", $session->name, $cm->id);
-notepad_debug($session);
-
 
 // Only editors can see this page.
 require_capability('mod/notepad:edit', $context);
