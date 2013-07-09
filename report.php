@@ -45,6 +45,9 @@
     require_login($course, false, $cm);
     $context = get_context_instance(CONTEXT_MODULE, $cm->id);
     $PAGE->set_pagelayout('report');
+    $PAGE->requires->css('/mod/notepad/css/notepad.css');
+    $PAGE->requires->js('/mod/notepad/scripts/jquery.min.js');
+    $PAGE->requires->js('/mod/notepad/scripts/notepad.js');
     
     add_to_log($course->id, "notepad", "report", "report.php?id=$cm->id", "$notepad->id", "$cm->id");
 
@@ -100,7 +103,7 @@ if ($allowedtograde) {
 	        echo '<form action="report.php" method="post">';
 	    }
 */
-	
+	    echo '<div id="toggleall"><a class="alltoggleLink" href="#">Show All</a></div>';
 	    if ($usersdone = notepad_get_users_done($notepad, $currentgroup)) {
 	        foreach ($usersdone as $user) {
 	            notepad_print_user_entry($course, $user, $entrybyuser[$user->id], $teachers, $grades);
@@ -111,8 +114,7 @@ if ($allowedtograde) {
 	    foreach ($users as $user) {       // Remaining users
 	        notepad_print_user_entry($course, $user, NULL, $teachers, $grades);
 	    }
-	
-	    /*
+/*
 if ($allowedtograde) {
 	        echo "<center>";
 	        echo "<input type=\"hidden\" name=\"id\" value=\"$cm->id\" />";
