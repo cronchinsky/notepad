@@ -536,7 +536,7 @@ function notepad_print($notepad, $sessions,$user)  {
        foreach ($prev_question_responses as $response) {
     		if ($response->qid == $question->id)  {
     			echo "<li><p>" . $question->question . "</p>";
-    			echo "<p>" . $response->response . "</p></li>";
+    			echo "<p class='question-response'>" . $response->response . "</p></li>";
     		}
        }
     }

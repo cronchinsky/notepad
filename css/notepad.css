@@ -246,6 +246,18 @@ table.print td.plans {
 	padding: 0 20px 10px 0;
 }
 
+#page-mod-notepad-report .session h3 {
+	color: #666;
+}
+
+#page-mod-notepad-report h3 a {
+	color:
+}
+
+#page-mod-notepad-report .question-response {
+	background: #F6F6F6;
+	padding: 5px;
+}
 @media print
   {
   body { 
