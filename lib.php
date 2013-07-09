@@ -523,7 +523,7 @@ function notepad_print($notepad, $sessions,$user)  {
 		$prev_question_responses = $DB->get_records_select('notepad_question_responses', "uid = $user->id AND qid IN (" . implode(",",$qids) . ") ");
 	}
 	
-	if ($qids or $aids or $pids) {
+	if ($prev_probe_responses or $prev_activity_responses or $prev_question_responses) {
 	 echo '<div class="session"><h3><a class="sessiontoggleLink" href="#">' . $session->name . '</a></h3>';
     } else {
      echo '<div class="session"><h3>' . $session->name . '</a></h3>';
