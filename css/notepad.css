@@ -232,6 +232,20 @@ table.print td.plans {
 }
 
 
+/* grade report */
+#page-mod-notepad-report table {
+	border-collapse: separate;
+}
+
+#page-mod-notepad-report h2.main {
+	margin-bottom: 15px;
+}
+
+#page-mod-notepad-report #toggleall {
+	text-align: right;
+	padding: 0 20px 10px 0;
+}
+
 @media print
   {
   body { 

@@ -397,11 +397,11 @@ function notepad_print_user_entry($course, $user, $entry, $teachers, $grades) {
     echo "\n<td rowspan=\"2\" width=\"35\" valign=\"top\">";
     echo $OUTPUT->user_picture($user, array('courseid' => $course->id));
     echo "</td>";
-    echo "<td nowrap=\"nowrap\" width=\"100%\">".fullname($user);
+    echo "<td nowrap=\"nowrap\" width=\"100%\"><h3><a class=\"toggleLink\">".fullname($user);
     if ($entry) {
         //echo "&nbsp;&nbsp;<font size=\"1\">".get_string("lastedited").": ".userdate($entry->modified)."</font>";
     }
-    echo "</td>";
+    echo "</a></h3></td>";
     echo "</tr>";
 
     echo "\n<tr><td width=\"100%\">";
@@ -413,7 +413,7 @@ function notepad_print_user_entry($course, $user, $entry, $teachers, $grades) {
 
     if ($entry) {
        
-        echo "\n<tr>";
+        echo "\n<tr  class=\"toggle\">";
         echo "<td width=\"35\" valign=\"top\">";
 /*
         if (!$entry->teacher) {
@@ -497,8 +497,7 @@ function notepad_print($notepad, $sessions,$user)  {
   }
   echo "<div class='notepad-print'>";
   foreach ($sessions as $session) {
-    echo '<div class="session"><h3><a href="' . $CFG->wwwroot . '/mod/notepad/session.php?id=' . $session->id . '">' . $session->name . '</a></h3>';
-    
+        
     $probes = $DB->get_records('notepad_probes', array('sid' => $session->id));
 	$pids = array_keys($probes);
 	
@@ -523,6 +522,14 @@ function notepad_print($notepad, $sessions,$user)  {
 	if ($qids)  {
 		$prev_question_responses = $DB->get_records_select('notepad_question_responses', "uid = $user->id AND qid IN (" . implode(",",$qids) . ") ");
 	}
+	
+	if ($qids or $aids or $pids) {
+	 echo '<div class="session"><h3><a class="sessiontoggleLink" href="#">' . $session->name . '</a></h3>';
+    } else {
+     echo '<div class="session"><h3>' . $session->name . '</a></h3>';
+    }
+    
+    echo '<div class="toggle sessiontoggle">';
 	echo "<ol>";
 	
     foreach ($questions as $question) {
@@ -567,6 +574,7 @@ function notepad_print($notepad, $sessions,$user)  {
     echo "</li>";
 
   	echo "</ol>";
+  	echo "</div>";
   	echo "</div>";
   }
   
