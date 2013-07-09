@@ -70,7 +70,7 @@ $PAGE->requires->css('/mod/notepad/css/notepad.css');
 notepad_set_display_type($notepad);
 
 // All question for the session.
-$questions = $DB->get_records('notepad_questions', array('sid' => $session->id));
+$questions = $DB->get_records('notepad_questions', array('sid' => $session->id), 'id');
 
 $question = NULL;
 
