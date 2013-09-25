@@ -783,8 +783,9 @@ function notepad_set_display_type($notepad) {
 } 
 
 /**
- * Debugger.
+ * Debugger. If you don't see the output, break;
  */
 function notepad_debug($variables) {
+  
   echo "<pre>" . var_export($variables,TRUE) . "</pre>";
 } 

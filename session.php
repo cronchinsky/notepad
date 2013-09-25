@@ -117,11 +117,10 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 	} 
 
  $mform = new notepad_edit_form("/mod/notepad/session.php?id={$session->id}", array('probes' => $probes, 'activities' => $activities, 'questions' => $questions, 'session' => $session));
-    
+
  if ($responses = $mform->get_data()) {
 
- 	notepad_debug('HELLO');
- 	$timenow = time();
+    $timenow = time();
     $newentry->modified = $timenow;
  
  	if ($entry) {
@@ -157,8 +156,9 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
   $form_items = array();
   $form_question = array(); 
 
+  
   foreach ($responses as $key => $response) {
-    
+       
     $exploded_key = explode("-",$key);
     
     $keysize = sizeof($exploded_key);    
@@ -175,16 +175,19 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 
    }
    
-    	notepad_debug($responses);
-    	notepad_debug($form_items);
+     
+     //notepad_debug($responses);
+     //notepad_debug($form_items);
     	
      foreach ($form_items as $table => $item_ids) {
    	    foreach ($item_ids as $item_id => $fields) {
-		
+		      
 		      $new_response = new stdClass();
 
-		     
+		      $new_response->uid = $USER->id;
 		      if ($table == 'probe') { 
+		        //notepad_debug($item_id);
+		        //notepad_debug($fields);
 		      	$new_response->pid = $item_id;
 		      	$new_response->plans = $fields['plans'];
 		      	if (array_key_exists("useradio",$fields))  $new_response->useradio = $fields['useradio'];
@@ -194,7 +197,7 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 		      	if (array_key_exists("useradio",$fields))  $new_response->useradio = $fields['useradio'];
 		      } else {
 
-			    $new_response->uid = $USER->id;
+			    
 			    $new_response->qid = $item_id;
 			    $new_response->response = $fields['response'];
 			   
@@ -213,13 +216,15 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 
 
 		       } 
+		       //notepad_debug($new_response);
+		       //notepad_debug($table);
 		      $DB->insert_record('notepad_' . $table . '_responses',$new_response);
     	}
     
     }
    
-
-  echo 'Got data';
+  // to notepad_debug the form processing, use the break below a
+  //break
   redirect("session.php?id=$id&newSave=1$ready");
 }
 
