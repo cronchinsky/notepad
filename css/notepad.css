@@ -48,7 +48,7 @@ ol.notepad li {
 
 table.probes,
 table.activities  {
-	width: 750px;
+	width: 800px;
 	border: 1px solid #bebebe;
 	margin: 20px 0;
 }
@@ -68,17 +68,17 @@ table.activities th {
 
 table.probes td.probe-name, 
 table.activities td.activity-name {
-	width: 200px;
+	width: 230px;
 }
 
 table.probes td.probe-usage, 
 table.activities td.activity-usage {
-	width: 150px;
+	width: 190px;
 }
 
 table.probes td.probe-plans, 
 table.activities td.activity-plans {
-	width: 400px;
+	width: 430px;
 }
 
 
