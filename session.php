@@ -104,6 +104,8 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 	$prev_activity_responses = array();
 	$prev_question_responses = array();
 	
+	$directions = $session->directions;
+	
 	if ($pids) {
 		$prev_probe_responses = $DB->get_records_select('notepad_probe_responses', "uid = $USER->id AND pid IN (" . implode(",",$pids) . ") ");
 	} 
@@ -278,7 +280,7 @@ echo "</form>";
 
 echo "</div>";
 
-echo "<div id='directions'><h4>$session->directions</h4></div>";
+echo "<div id='directions'><h4>$directions</h4></div>";
 
 if ($message) {
 	echo "<div class='message'>$message</div>";
