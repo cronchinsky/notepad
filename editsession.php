@@ -83,6 +83,8 @@ else {
       $session->name = $results->name;
       $session->weight = $results->weight;
       $session->directions = $results->directions;
+      $session->wysiwyg = $results->wysiwyg;
+      $session->wysiwyg_prompt = $results->wysiwyg_prompt;
       $updated_record = $DB->update_record('notepad_sessions', $session);
       
       redirect("view.php?n=$nid");

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/notes/db" VERSION="20130610" COMMENT="XMLDB file for Moodle mod/notes.  Create for DPD project"
+<XMLDB PATH="mod/notes/db" VERSION="20140603" COMMENT="XMLDB file for Moodle mod/notes.  Create for DPD project"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -16,7 +16,8 @@
         <FIELD NAME="display" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="timemodified" NEXT="popupwidth"/>
         <FIELD NAME="popupwidth" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="display" NEXT="popupheight"/>
         <FIELD NAME="popupheight" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="popupwidth" NEXT="grade"/>
-        <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="popupheight"/>
+        <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="popupheight" NEXT="textfield"/>
+        <FIELD NAME="textfield" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" PREVIOUS="grade"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -31,7 +32,12 @@
         <FIELD NAME="nid" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="notes id" PREVIOUS="id" NEXT="name"/>
         <FIELD NAME="name" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="Session name" PREVIOUS="nid" NEXT="directions"/>
         <FIELD NAME="directions" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="Directions for the session" PREVIOUS="name" NEXT="weight"/>
-        <FIELD NAME="weight" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="directions"/>
+        <FIELD NAME="weight" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" PREVIOUS="directions" NEXT="textfield"/>
+        <FIELD NAME="textfield" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="For the WYSIWYG editor" PREVIOUS="weight" NEXT="textfieldformat"/>
+        <FIELD NAME="textfieldformat" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="textfield" NEXT="textfieldtrust"/>
+        <FIELD NAME="textfieldtrust" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="textfieldformat" NEXT="wysiwyg"/>
+        <FIELD NAME="wysiwyg" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="textfieldtrust" NEXT="wysiwyg_prompt"/>
+        <FIELD NAME="wysiwyg_prompt" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" PREVIOUS="wysiwyg"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

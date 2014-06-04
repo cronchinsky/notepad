@@ -46,6 +46,14 @@ ol.notepad li {
 	margin-bottom: 10px;
 }
 
+.mform fieldset div div.wysiwyg {
+	margin-left: 30px;
+}
+
+.mform .wysiwyg .fitem .fitemtitle {
+	display: none;
+}
+
 table.probes,
 table.activities  {
 	width: 800px;

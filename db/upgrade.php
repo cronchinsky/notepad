@@ -73,9 +73,91 @@ function xmldb_notepad_upgrade($oldversion) {
         // notepad savepoint reached
         upgrade_mod_savepoint(true, 2012100206, 'notepad');
     }
+    
+    if ($oldversion < 2014060101) {
 
+        // Define field textfield to be added to notepad_sessions
+        $table = new xmldb_table('notepad_sessions');
+        $field = new xmldb_field('textfield', XMLDB_TYPE_TEXT, 'big', null, null, null, null, 'weight');
 
+        // Conditionally launch add field textfield
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
+        // notes savepoint reached
+        upgrade_mod_savepoint(true, 2014060101, 'notepad');
+    }
+
+    if ($oldversion < 2014060200) {
+
+        // Define field textfield to be added to notepad
+        $table = new xmldb_table('notepad');
+        $field = new xmldb_field('textfield', XMLDB_TYPE_TEXT, 'big', null, null, null, null, 'grade');
+
+        // Conditionally launch add field textfield
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // notes savepoint reached
+        upgrade_mod_savepoint(true, 2014060200, 'notepad');
+    }
+    
+        if ($oldversion < 2014060201) {
+
+        // Changing precision of field textfield on table notepad_sessions to (medium)
+        $table = new xmldb_table('notepad_sessions');
+        $field = new xmldb_field('textfield', XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'weight');
+
+        // Launch change of precision for field textfield
+        $dbman->change_field_precision($table, $field);
+        
+              // Define field textfieldformat to be added to notepad_sessions
+        $table = new xmldb_table('notepad_sessions');
+        $field = new xmldb_field('textfieldformat', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, null, null, '0', 'textfield');
+
+        // Conditionally launch add field textfieldformat
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+                // Define field textfieldtrust to be added to notepad_sessions
+        $table = new xmldb_table('notepad_sessions');
+        $field = new xmldb_field('textfieldtrust', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, null, null, '0', 'textfieldformat');
+
+        // Conditionally launch add field textfieldtrust
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // notes savepoint reached
+        upgrade_mod_savepoint(true, 2014060201, 'notepad');
+    }
+    
+       if ($oldversion < 2014060300) {
+
+        // Define field wysiwyg to be added to notepad_sessions
+        $table = new xmldb_table('notepad_sessions');
+        $field = new xmldb_field('wysiwyg', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, null, null, null, 'textfieldtrust');
+
+        // Conditionally launch add field wysiwyg
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+                // Define field wysiwyg_prompt to be added to notepad_sessions
+        $table = new xmldb_table('notepad_sessions');
+        $field = new xmldb_field('wysiwyg_prompt', XMLDB_TYPE_TEXT, 'small', null, null, null, null, 'wysiwyg');
+
+        // Conditionally launch add field wysiwyg_prompt
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // notes savepoint reached
+        upgrade_mod_savepoint(true, 2014060300, 'notepad');
+    }
 
     return true;
 }

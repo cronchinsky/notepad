@@ -12,6 +12,8 @@ class notepad_edit_form extends moodleform {
         $probes = $this->_customdata['probes'];
         $activities = $this->_customdata['activities'];
         $questions = $this->_customdata['questions'];
+        
+        $context = $this->_customdata['context'];
 
         $session = $this->_customdata['session'];
 
@@ -25,9 +27,8 @@ class notepad_edit_form extends moodleform {
 		        notepad_add_question_to_form($question,$mform, $index, 'question');
 	            $index++;		          
 	          }	          
-          }
-          
-
+          }	  
+		  
 		  if ($probes)  {
 			  $mform->addElement('html', '<li><p>Check any <strong>formative assessment probes</strong> that you would like to try with students.</p>');
 			  
@@ -71,6 +72,14 @@ class notepad_edit_form extends moodleform {
 		            
           $mform->addElement('html', '</ol>');
           
+          if ($session->wysiwyg) {
+            $maxfiles = 99;             // TODO: add some setting
+		    $maxbytes = $CFG->maxbytes; // TODO: add some setting
+		    $mform->addElement('html','<div class="wysiwyg">');
+            $mform->addElement('editor','textfield_editor', '' ,null,array('maxfiles'=> EDITOR_UNLIMITED_FILES, 'maxbytes' => $maxbytes));	
+            $mform->addElement('html','</div>');	  
+          }
+          
           $mform->addElement('checkbox', 'question-submit_session','Ready for facilitators');
          
           $this->add_action_buttons(false, "Save");
@@ -81,7 +90,7 @@ class notepad_edit_form extends moodleform {
 		  $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 		  $mform->closeHeaderBefore('buttonar');
 		  */
-
-		  
-    }                          
+          $this->set_data($session);  
+    }   
+                         
 }                               

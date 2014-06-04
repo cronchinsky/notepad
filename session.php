@@ -42,7 +42,7 @@ $session = $DB->get_record('notepad_sessions', array('id' => $id));
 // If the session is not found, throw an error
 if (!$session) {
   error('That session does not exist!');
-}
+} 
 
 if ($newSave) {
 	$message = '<h3>Your notebook session has been saved.</h3>';
@@ -118,10 +118,29 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 		$prev_question_responses = $DB->get_records_select('notepad_question_responses', "uid = $USER->id AND qid IN (" . implode(",",$qids) . ") ");
 	} 
 
- $mform = new notepad_edit_form("/mod/notepad/session.php?id={$session->id}", array('probes' => $probes, 'activities' => $activities, 'questions' => $questions, 'session' => $session));
+    if ($session->wysiwyg) {
+	  $maxfiles = 99;                // TODO: add some setting
+	  $maxbytes = $CFG->maxbytes; // TODO: add some setting
+	  $definitionoptions = array('trusttext'=>true, 'subdirs'=>false, 'maxfiles'=>$maxfiles, 'maxbytes'=>$maxbytes, 'context'=>$context);
+	  $session = file_prepare_standard_editor($session, 'textfield', $definitionoptions, $context, 'mod_notepad', 'notepad', $session->id);
+      // store the updated value values
+      $DB->update_record('notepad_sessions', $session);
+
+      //refetch complete entry
+      $session = $DB->get_record('notepad_sessions', array('id'=>$session->id));
+    }
+
+	$mform = new notepad_edit_form("/mod/notepad/session.php?id={$session->id}", array('probes' => $probes, 'activities' => $activities, 'questions' => $questions, 'session' => $session, 'context' => $context));
 
  if ($responses = $mform->get_data()) {
-
+   
+    if (empty($responses->id)) {
+        $responses->id            = $session->id;
+    }
+    $responses->textfield        = '';          // updated later
+    $responses->textfieldformat  = FORMAT_HTML; // updated later
+    $responses->textfieldtrust   = 0;           // updated later
+   
     $timenow = time();
     $newentry->modified = $timenow;
  
@@ -180,7 +199,7 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
      
      //notepad_debug($responses);
      //notepad_debug($form_items);
-    	
+     //break;
      foreach ($form_items as $table => $item_ids) {
    	    foreach ($item_ids as $item_id => $fields) {
 		      
@@ -224,9 +243,14 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
     	}
     
     }
+    
+    if ($session->wysiwyg) {
+      // save and relink embedded images and save attachments
+      $responses = file_postupdate_standard_editor($responses, 'textfield', $definitionoptions, $context, 'mod_notepad', 'notepad', $responses->id);
+      // store the updated value values
+      $DB->update_record('notepad_sessions', $responses);
+    }
    
-  // to notepad_debug the form processing, use the break below a
-  //break
   redirect("session.php?id=$id&newSave=1$ready");
 }
 
@@ -257,6 +281,12 @@ foreach ($prev_activity_responses as $response) {
 
 }
 
+if ($session->wysiwyg) {
+  $draftid_editor = file_get_submitted_draft_itemid('textfield_editor');
+  $currenttext = file_prepare_draft_area($draftid_editor,$context->id,'mod_notepad','notepad', $session->id,array('subdirs'=>true),$session->textfield);
+  $form_data['textfield_editor'] = array('text'=>$currenttext,'format'=>$session->textfieldformat,'itemid'=>$draftid_editor);
+}
+
 $mform->set_data($form_data);
 
  
@@ -271,8 +301,8 @@ echo "<div class='notepad-session-list'>";
 echo "<form>";
 echo "<select onchange='window.location.href=this.options[this.selectedIndex].value'>";
 echo "<option value=''>Go to..</option>";
-foreach ($sessions as $session) {
-  echo '<option value="'. $CFG->wwwroot . '/mod/notepad/session.php?id=' . $session->id . '">' . $session->name . '</option>';
+foreach ($sessions as $notepad_session) {
+  echo '<option value="'. $CFG->wwwroot . '/mod/notepad/session.php?id=' . $notepad_session->id . '">' . $notepad_session->name . '</option>';
 }
 echo '<option value="'. $CFG->wwwroot . '/mod/notepad/print.php?n=' . $notepad->id . '&amp;sid=' . $session->id  . '">Print my notebook</option>';
 echo "</select>";

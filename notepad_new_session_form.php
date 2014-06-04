@@ -14,6 +14,10 @@ class notepad_new_session_form extends moodleform {
         $mform->addRule('session_name', 'This field is required', 'required');
         $mform->addElement('textarea', 'directions', get_string('directions', 'notepad'),'wrap="virtual" rows="3" cols="65"');
         
+        $mform->addElement('advcheckbox','wysiwyg', 'WYSIWYG','WYSIWYG Field',array('group'=>1),array(0,1));
+        $mform->addElement('textarea', 'wysiwyg_prompt', 'WYSIWYG Prompt','wrap="virtual" rows="3" cols="65"');
+
+        
         $range = range(-50,50);
         $options = array_combine($range,$range);
         

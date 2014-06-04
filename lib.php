@@ -70,6 +70,9 @@ function notepad_add_instance(stdClass $notepad, mod_notepad_mod_form $mform = n
     global $DB;
 
     $notepad->timecreated = time();
+    $cmid        = $notepad->coursemodule;
+    $draftitemid = $notepad->notepad['itemid'];
+
     
     $returnid = $DB->insert_record('notepad', $notepad);
     $notepad->id = $returnid;
@@ -99,8 +102,11 @@ function notepad_update_instance(stdClass $notepad, mod_notepad_mod_form $mform 
 
     # You may have to add extra stuff in here #
     notepad_grade_item_update($notepad);
+    
+    $DB->update_record('notepad', $notepad);
 
     return $DB->update_record('notepad', $notepad);
+    //return true;
 }
 
 /**
@@ -485,10 +491,11 @@ function notepad_print($notepad, $sessions,$user)  {
   //require_once(dirname(__FILE__).'/lib.php');
 
   echo "<div class='notepad-session-wrapper'>";
-  if ($notepad->intro) { // Conditions to show the intro can change to look for own settings or whatever
+  if (true) { // Conditions to show the intro can change to look for own settings or whatever
     $course = $DB->get_record('course', array('id' => $notepad->course));
     if ($course->id) {
 	    $cm = get_coursemodule_from_instance('notepad', $notepad->id, $course->id, false, MUST_EXIST);
+	    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 	    }
 	else {
 		error('Could not find the course!');
@@ -572,8 +579,13 @@ function notepad_print($notepad, $sessions,$user)  {
     	echo "</table>";   	
     }
     echo "</li>";
-
+    
   	echo "</ol>";
+  	
+    // get the reflection field for the session
+    $reflections = file_rewrite_pluginfile_urls($session->textfield, 'pluginfile.php', $context->id, 'mod_notepad', 'notepad', $session->id);
+    echo "<div class='reflections'>" . $reflections . "</div>";
+
   	echo "</div>";
   	echo "</div>";
   }
@@ -643,11 +655,18 @@ function notepad_pluginfile($course, $cm, $context, $filearea, array $args, $for
 
     if ($context->contextlevel != CONTEXT_MODULE) {
         send_file_not_found();
+       
     }
-
     require_login($course, true, $cm);
-
-    send_file_not_found();
+    $fs = get_file_storage();
+    $relativepath = implode('/', $args);
+    $fullpath = "/$context->id/mod_notepad/$filearea/$relativepath";
+    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+		send_file_not_found();
+    }
+    // finally send the file
+    send_stored_file($file, 0, 0, false); // download MUST be forced - security
+   
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -717,6 +736,7 @@ function notepad_add_question_to_form($item, &$mform, $index, $type) {
   $mform->addElement('html','</li>');
   
 }
+
 /**
  * Returns the notepad instance course_module id
  * 
