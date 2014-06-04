@@ -584,6 +584,12 @@ function notepad_print($notepad, $sessions,$user)  {
   	
     // get the reflection field for the session
     $reflections = file_rewrite_pluginfile_urls($session->textfield, 'pluginfile.php', $context->id, 'mod_notepad', 'notepad', $session->id);
+    // we need to do all this to get Dragmath to work. And it does!
+    $formatoptions = new stdClass;
+	$formatoptions->noclean = true;
+	$formatoptions->overflowdiv = true;
+	$formatoptions->context = $context;
+	$reflections = format_text($reflections, FORMAT_HTML, $formatoptions);
     echo "<div class='reflections'>" . $reflections . "</div>";
 
   	echo "</div>";
