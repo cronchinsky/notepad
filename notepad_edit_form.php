@@ -68,21 +68,23 @@ class notepad_edit_form extends moodleform {
 	          $mform->addElement('html', '</li>');
           }
 		  	
-		  $mform->addElement('html','</ul>'); 
-		            
-          $mform->addElement('html', '</ol>');
-          
-          if ($session->wysiwyg) {
+		  	
+		  if ($session->wysiwyg) {
             $maxfiles = 99;             // TODO: add some setting
 		    $maxbytes = $CFG->maxbytes; // TODO: add some setting
-		    $mform->addElement('html','<div class="wysiwyg">');
+		    $mform->addElement('html','<li><div class="wysiwyg">');
 		    $mform->addElement('html', '<p class="wysiwyg-prompt">');
 		    $mform->addElement('html',"$session->wysiwyg_prompt");
             $mform->addElement('editor','textfield_editor', '' ,null,array('maxfiles'=> EDITOR_UNLIMITED_FILES, 'maxbytes' => $maxbytes));	
             $mform->addElement('html', '</p>');
-            $mform->addElement('html','</div>');	  
+            $mform->addElement('html','</div></li>');	  
           }
+	
+		  $mform->addElement('html','</ul>'); 
+		            
+          $mform->addElement('html', '</ol>');
           
+                    
           $mform->addElement('checkbox', 'question-submit_session','Ready for facilitators');
          
           $this->add_action_buttons(false, "Save");
