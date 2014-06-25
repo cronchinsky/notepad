@@ -136,7 +136,7 @@ if ($allowedtograde) {
 	    echo '<div id="toggleall"><a class="alltoggleLink" href="#">Show All</a></div>';
 	    
 	    $usersdone = notepad_get_users_done($notepad, $currentgroup);
-	   	notepad_debug($usersdone);
+	   	
 	    if ($u) {
 	         $userentry = (isset($usersdone[$u]) ? $entrybyuser[$u] : NULL);
 	         notepad_print_user_entry($course, $users[$u], $userentry, $s, $teachers, $grades); 	       

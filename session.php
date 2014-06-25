@@ -119,7 +119,7 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 	} 
 
     if ($session->wysiwyg) {
-      $maxfiles = 99;                // TODO: add some setting
+      $maxfiles = 99;             // TODO: add some setting
       $maxbytes = $CFG->maxbytes; // TODO: add some settin
       $definitionoptions = array('trusttext'=>true, 'subdirs'=>false, 'maxfiles'=>$maxfiles, 'maxbytes'=>$maxbytes, 'context'=>$context);
       if ($session_wysiwyg = $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $USER->id))) {
