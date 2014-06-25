@@ -158,6 +158,46 @@ function xmldb_notepad_upgrade($oldversion) {
         // notes savepoint reached
         upgrade_mod_savepoint(true, 2014060300, 'notepad');
     }
+        if ($oldversion < 2014062400) {
+   
+              
+        $table = new xmldb_table('notepad_wysiwyg');
+ 
+		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null, null);
+		$table->add_field('textfield', XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'id');
+		$table->add_field('textfieldformat', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, null, null, null, 'textfield');
+		$table->add_field('textfieldtrust', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, null, null, null, 'textfieldformat');
+ 
+		$table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'), null, null);
+ 
+		$status = $dbman->create_table($table);
 
+        // notes savepoint reached
+        upgrade_mod_savepoint(true, 2014062400, 'notepad');
+    }
+    
+        if ($oldversion < 2014062401) {
+
+        // Define field sid to be added to notepad_wysiwyg
+        $table = new xmldb_table('notepad_wysiwyg');
+        $field = new xmldb_field('sid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'id');
+
+        // Conditionally launch add field sid
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+                // Define field uid to be added to notepad_wysiwyg
+        $table = new xmldb_table('notepad_wysiwyg');
+        $field = new xmldb_field('uid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'sid');
+
+        // Conditionally launch add field uid
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // notes savepoint reached
+        upgrade_mod_savepoint(true, 2014062401, 'notepad');
+    }
     return true;
 }

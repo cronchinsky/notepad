@@ -119,27 +119,38 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 	} 
 
     if ($session->wysiwyg) {
-	  $maxfiles = 99;                // TODO: add some setting
-	  $maxbytes = $CFG->maxbytes; // TODO: add some setting
-	  $definitionoptions = array('trusttext'=>true, 'subdirs'=>false, 'maxfiles'=>$maxfiles, 'maxbytes'=>$maxbytes, 'context'=>$context);
-	  $session = file_prepare_standard_editor($session, 'textfield', $definitionoptions, $context, 'mod_notepad', 'notepad', $session->id);
-      // store the updated value values
-      $DB->update_record('notepad_sessions', $session);
-
-      //refetch complete entry
-      $session = $DB->get_record('notepad_sessions', array('id'=>$session->id));
+      $maxfiles = 99;                // TODO: add some setting
+      $maxbytes = $CFG->maxbytes; // TODO: add some settin
+      $definitionoptions = array('trusttext'=>true, 'subdirs'=>false, 'maxfiles'=>$maxfiles, 'maxbytes'=>$maxbytes, 'context'=>$context);
+      if ($session_wysiwyg = $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $USER->id))) {
+		  $session_wysiwyg = file_prepare_standard_editor($session_wysiwyg, 'textfield', $definitionoptions, $context, 'mod_notepad', 'notepad', $session_wysiwyg->id);
+	      // store the updated value values
+	      $DB->update_record('notepad_wysiwyg', $session_wysiwyg);
+	
+	      //refetch complete entry
+	      $session_wysiwyg = $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $USER->id));
+      } else {
+          $session_wysiwyg->uid = $USER->id;
+          $session_wysiwyg->sid = $session->id;
+          $session_wysiwyg->textfield = '';
+          $session_wysiwyg->textfieldtrust = 0;
+          $session_wysiwyg->textfieldformat = FORMAT_HTML;
+	      $session_wysiwyg->id = $DB->insert_record('notepad_wysiwyg', $session_wysiwyg);
+      }
     }
-
 	$mform = new notepad_edit_form("/mod/notepad/session.php?id={$session->id}", array('probes' => $probes, 'activities' => $activities, 'questions' => $questions, 'session' => $session, 'context' => $context));
 
  if ($responses = $mform->get_data()) {
-   
+    
     if (empty($responses->id)) {
-        $responses->id            = $session->id;
+        $responses->id            = $session_wysiwyg->id;
     }
     $responses->textfield        = '';          // updated later
     $responses->textfieldformat  = FORMAT_HTML; // updated later
     $responses->textfieldtrust   = 0;           // updated later
+    $responses->sid	             = $session->id;
+    $responses->uid				 = $USER->id;
+
    
     $timenow = time();
     $newentry->modified = $timenow;
@@ -248,7 +259,7 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
       // save and relink embedded images and save attachments
       $responses = file_postupdate_standard_editor($responses, 'textfield', $definitionoptions, $context, 'mod_notepad', 'notepad', $responses->id);
       // store the updated value values
-      $DB->update_record('notepad_sessions', $responses);
+      $DB->update_record('notepad_wysiwyg', $responses);
     }
    
   redirect("session.php?id=$id&newSave=1$ready");
@@ -283,8 +294,8 @@ foreach ($prev_activity_responses as $response) {
 
 if ($session->wysiwyg) {
   $draftid_editor = file_get_submitted_draft_itemid('textfield_editor');
-  $currenttext = file_prepare_draft_area($draftid_editor,$context->id,'mod_notepad','notepad', $session->id,array('subdirs'=>true),$session->textfield);
-  $form_data['textfield_editor'] = array('text'=>$currenttext,'format'=>$session->textfieldformat,'itemid'=>$draftid_editor);
+  $currenttext = file_prepare_draft_area($draftid_editor,$context->id,'mod_notepad','notepad', $session_wysiwyg->id, array('subdirs'=>true),$session_wysiwyg->textfield);
+  $form_data['textfield_editor'] = array('text'=>$currenttext,'format'=>$session_wysiwyg->textfieldformat,'itemid'=>$draftid_editor);
 }
 
 $mform->set_data($form_data);

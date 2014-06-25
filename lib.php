@@ -518,6 +518,7 @@ function notepad_print($notepad, $sessions,$user)  {
 	$questions = $DB->get_records('notepad_questions', array('sid' => $session->id));
 	$qids = array_keys($questions);
 	
+	
 	$prev_probe_responses = array();
 	$prev_activity_responses = array();
 	$prev_question_responses = array();
@@ -534,6 +535,8 @@ function notepad_print($notepad, $sessions,$user)  {
 		$prev_question_responses = $DB->get_records_select('notepad_question_responses', "uid = $user->id AND qid IN (" . implode(",",$qids) . ") ");
 	}
 	
+    $session_wysiwyg =  $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $user->id));
+
 	if ($prev_probe_responses or $prev_activity_responses or $prev_question_responses) {
 	 echo '<div class="session"><h3><a class="sessiontoggleLink" href="#">' . $session->name . '</a></h3>';
     } else {
@@ -586,16 +589,17 @@ function notepad_print($notepad, $sessions,$user)  {
     
   	echo "</ol>";
   	
-    // get the reflection field for the session
-    $reflections = file_rewrite_pluginfile_urls($session->textfield, 'pluginfile.php', $context->id, 'mod_notepad', 'notepad', $session->id);
-    // we need to do all this to get Dragmath to work. And it does!
-    $formatoptions = new stdClass;
-	$formatoptions->noclean = true;
-	$formatoptions->overflowdiv = true;
-	$formatoptions->context = $context;
-	$reflections = format_text($reflections, FORMAT_HTML, $formatoptions);
-    echo "<div class='reflections'>" . $reflections . "</div>";
-
+  	if ($session_wysiwyg) {
+	    // get the reflection field for the session
+	    $reflections = file_rewrite_pluginfile_urls($session_wysiwyg->textfield, 'pluginfile.php', $context->id, 'mod_notepad', 'notepad', $session_wysiwyg->id);
+	    // we need to do all this to get Dragmath to work. And it does!
+	    $formatoptions = new stdClass;
+		$formatoptions->noclean = true;
+		$formatoptions->overflowdiv = true;
+		$formatoptions->context = $context;
+		$reflections = format_text($reflections, FORMAT_HTML, $formatoptions);
+	    echo "<div class='reflections'>" . $reflections . "</div>";
+    }
   	echo "</div>";
   	echo "</div>";
   }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/notes/db" VERSION="20140603" COMMENT="XMLDB file for Moodle mod/notes.  Create for DPD project"
+<XMLDB PATH="mod/notes/db" VERSION="20140624" COMMENT="XMLDB file for Moodle mod/notes.  Create for DPD project"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -110,12 +110,25 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="notepad_questions" COMMENT="Text questions for the notes" PREVIOUS="notepad_entries">
+    <TABLE NAME="notepad_questions" COMMENT="Text questions for the notes" PREVIOUS="notepad_entries" NEXT="notepad_wysiwyg">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="sid"/>
         <FIELD NAME="sid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Session id in the notes" PREVIOUS="id" NEXT="question"/>
         <FIELD NAME="question" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="The text questions" PREVIOUS="sid" NEXT="weight"/>
         <FIELD NAME="weight" TYPE="int" LENGTH="5" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" COMMENT="to enable reordering of questions" PREVIOUS="question"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="notepad_wysiwyg" COMMENT="wysiwyg data" PREVIOUS="notepad_questions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="sid"/>
+        <FIELD NAME="sid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="uid"/>
+        <FIELD NAME="uid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="sid" NEXT="textfield"/>
+        <FIELD NAME="textfield" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="uid" NEXT="textfieldformat"/>
+        <FIELD NAME="textfieldformat" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="textfield" NEXT="textfieldtrust"/>
+        <FIELD NAME="textfieldtrust" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="textfieldformat"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
