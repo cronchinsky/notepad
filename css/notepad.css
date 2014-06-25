@@ -242,6 +242,9 @@ table.print td.plans {
 	border-collapse: separate;
 }
 
+#page-mod-notepad-report .grade-info {
+	display: none;
+}
 #page-mod-notepad-report h2.main {
 	margin-bottom: 15px;
 }

@@ -431,7 +431,7 @@ function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $
         echo $OUTPUT->user_picture($teachers[$entry->teacher], array('courseid' => $course->id));
 */
         echo "</td>";
-        echo "<td>Entered:";
+        echo "<td><div class=\"grade-info\">Entered:";
         
         
         $attrs = array();
@@ -472,7 +472,7 @@ function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $
         }
 */
         //$nid = $notepad->id;
-
+        echo "</div>";
 		$notepad  = $DB->get_record('notepad', array('id' => $entry->notepad), '*', MUST_EXIST);
 		if ($session) {
 			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id, 'id' => $session));
