@@ -295,8 +295,10 @@ $mform->set_data($form_data);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($notepad->name);
 
+/*
 $i = 0;
 $num_sessions = count($sessions);
+*/
 echo "<div class='notepad-session-list'>";
 echo "<form>";
 echo "<select onchange='window.location.href=this.options[this.selectedIndex].value'>";

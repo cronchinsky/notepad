@@ -391,7 +391,7 @@ function notepad_get_users_done($notepad, $currentgroup) {
     return $notepads;
 }
 
-function notepad_print_user_entry($course, $user, $entry, $teachers, $grades) {
+function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $grades) {
     
     global $USER, $OUTPUT, $DB, $CFG;
     
@@ -474,7 +474,11 @@ function notepad_print_user_entry($course, $user, $entry, $teachers, $grades) {
         //$nid = $notepad->id;
 
 		$notepad  = $DB->get_record('notepad', array('id' => $entry->notepad), '*', MUST_EXIST);
-		$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id));
+		if ($session) {
+			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id, 'id' => $session));
+		} else {
+			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id));
+	    }
 		if ($sessions) {
 			notepad_print($notepad, $sessions, $user);
 		}

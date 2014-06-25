@@ -127,7 +127,8 @@ ul li.session-prompts {
 	margin: 20px 0;
 }
 
-.notepad-session-list {
+.notepad-session-list,
+.notepad-user-list {
 	float: right;
 }
 
@@ -246,7 +247,7 @@ table.print td.plans {
 }
 
 #page-mod-notepad-report #toggleall {
-	text-align: right;
+	/* text-align: right; */
 	padding: 0 20px 10px 0;
 }
 

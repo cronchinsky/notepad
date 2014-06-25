@@ -8,6 +8,8 @@
 
     $id = optional_param('id',0,PARAM_INT);    // Course Module ID, or
     $n = optional_param('n',0,PARAM_INT);     // notepad ID
+    $s = optional_param('s',0,PARAM_INT);     // session ID
+    $u = optional_param('u',0,PARAM_INT);     // user ID
 
     $mode = optional_param('mode', '', PARAM_ALPHA);        // Report mode
 
@@ -53,9 +55,8 @@
 
 	echo $OUTPUT->header();
 	echo $OUTPUT->heading('notepad grade report');	
-	
-	// make some easy ways to access the entries.
-	if ( $notepad_entries = $DB->get_records("notepad_entries", array("notepad" => $notepad->id))) {
+    // make some easy ways to access the entries.
+	if ( $notepad_entries = $DB->get_records("notepad_entries", array("notepad" => $notepad->id))) {	    
 	    foreach ($notepad_entries as $entry) {
 	        $entrybyuser[$entry->uid] = $entry;
 	        $entrybyentry[$entry->id]  = $entry;
@@ -64,7 +65,10 @@
 	} else {
 	    $entrybyuser  = array () ;
 	    $entrybyentry = array () ;
+	    $sessions 	  = array () ;
 	}
+	
+	$sessions = $DB->get_records("notepad_sessions", array("nid" => $notepad->id));
 	
 	// Group mode
 	$groupmode = groups_get_activity_groupmode($cm);
@@ -83,7 +87,7 @@
 	}
 
 	$users = get_users_by_capability($context, 'mod/notepad:addentries', '', '', '', '', $groups);
-	
+		
 	if (!$users) {
 		echo $OUTPUT->heading(get_string("nousersyet"));
 	
@@ -101,18 +105,53 @@
 	    /*
 if ($allowedtograde) {
 	        echo '<form action="report.php" method="post">';
-	    }
+	    }	    
 */
+	    echo "<div class='notepad-session-list'>";
+		echo "<form>";
+		echo "<select onchange='window.location.href=this.options[this.selectedIndex].value'>";
+		echo "<option value=''>Show session..</option>";
+		foreach ($sessions as $notepad_session) {
+			echo '<option value="'. $CFG->wwwroot . '/mod/notepad/report.php?n=' . $notepad->id . '&amp;s=' . $notepad_session->id . '">' . $notepad_session->name . '</option>';
+		}
+		echo '<option value="'. $CFG->wwwroot . '/mod/notepad/report.php?n=' . $notepad->id  . '">All sessions</option>';
+		echo "</select>";
+		echo "</form>";
+
+		echo "</div>";
+		
+		echo "<div class='notepad-user-list'>";
+		echo "<form>";
+		echo "<select onchange='window.location.href=this.options[this.selectedIndex].value'>";
+		
+		echo "<option value=''>Show user..</option>";
+		foreach ($users as $user_id => $user) {
+			echo '<option value="'. $CFG->wwwroot . '/mod/notepad/report.php?n=' . $notepad->id . '&amp;u=' . $user->id . '">' . $user->firstname . ' ' . $user->lastname . '</option>';
+		}
+		echo '<option value="'. $CFG->wwwroot . '/mod/notepad/report.php?n=' . $notepad->id  . '">All users</option>';
+		echo "</select>";
+		echo "</form>";
+
+		echo "</div>";	    
 	    echo '<div id="toggleall"><a class="alltoggleLink" href="#">Show All</a></div>';
-	    if ($usersdone = notepad_get_users_done($notepad, $currentgroup)) {
-	        foreach ($usersdone as $user) {
-	            notepad_print_user_entry($course, $user, $entrybyuser[$user->id], $teachers, $grades);
-	            unset($users[$user->id]);
-	        }
-	    }
+	    
+	    $usersdone = notepad_get_users_done($notepad, $currentgroup);
+	   	    
+	    if ($u) {
+	         $userentry = (isset($usersdone[$u]) ? $entrybyuser[$u] : NULL);
+	         notepad_print_user_entry($course, $users[$u], $userentry, $s, $teachers, $grades); 	       
+	    }  else {
+	    	if ($usersdone) {
+	         	foreach ($usersdone as $user) {
+	             	notepad_print_user_entry($course, $user, $entrybyuser[$user->id], $s, $teachers, $grades);
+				 	unset($users[$user->id]);
+				 }
+		    }
 	
-	    foreach ($users as $user) {       // Remaining users
-	        notepad_print_user_entry($course, $user, NULL, $teachers, $grades);
+			foreach ($users as $user) {       // Remaining users
+					notepad_print_user_entry($course, $user, NULL, $s, $teachers, $grades);
+			}
+			
 	    }
 /*
 if ($allowedtograde) {

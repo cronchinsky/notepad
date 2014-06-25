@@ -34,7 +34,9 @@ require_once(dirname(__FILE__).'/lib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // notepad instance ID - it should be named as the first character of the module
-$sid = optional_param('sid', 0, PARAM_INT); // the session where the notepad is being printed from
+//$sid = optional_param('sid', 0, PARAM_INT); // the session where the notepad is being printed from
+$s = optional_param('s', 0, PARAM_INT); // the session to print
+
 if ($id) {
     $cm         = get_coursemodule_from_id('notepad', $id, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
@@ -86,18 +88,35 @@ echo "<option value=''>Go to..</option>";
 foreach ($sessions as $session) {
   echo '<option value="'. $CFG->wwwroot . '/mod/notepad/session.php?id=' . $session->id . '">' . $session->name . '</option>';
 }
-echo '<option value="'. $CFG->wwwroot . '/mod/notepad/print.php?n=' . $notepad->id . '&amp;sid=' . $session->id  . '">Print my notebook</option>';
+echo '<option value="'. $CFG->wwwroot . '/mod/notepad/print.php?n=' . $notepad->id . '">Print my notebook</option>';
 echo "</select>";
 echo "</form>";
 
 echo "</div>";
+
+echo "<div class='notepad-session-list'>";
+echo "<form>";
+echo "<select onchange='window.location.href=this.options[this.selectedIndex].value'>";
+echo "<option value=''>Show session..</option>";
+foreach ($sessions as $notepad_session) {
+	echo '<option value="'. $CFG->wwwroot . '/mod/notepad/print.php?n=' . $notepad->id . '&amp;s=' . $notepad_session->id . '">' . $notepad_session->name . '</option>';
+}
+echo '<option value="'. $CFG->wwwroot . '/mod/notepad/print.php?n=' . $notepad->id  . '">All sessions</option>';
+echo "</select>";
+echo "</form>";
+
+echo "</div>";
+
 echo "<h2>$notepad->name</h2>";
 
-
 if ($sessions) {
+  if ($s) {
+	$session = $DB->get_records('notepad_sessions', array('nid' => $nid, 'id' => $s));
+	notepad_print($notepad, $session, $USER);
+  } else {
   	//echo $OUTPUT->heading($notepad->name);
-  	notepad_print($notepad, $sessions, $USER);
-  	
+  	notepad_print($notepad, $sessions, $USER); 	
+  }
 }
 else {
   echo $OUTPUT->heading('There are no sessions in this notepad.');
