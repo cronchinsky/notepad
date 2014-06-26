@@ -391,11 +391,84 @@ function notepad_get_users_done($notepad, $currentgroup) {
     return $notepads;
 }
 
+function notepad_print_completion($sessions, $users) {
+
+	echo '<table class="notepad-status">';
+	echo '<tr>';
+	echo '<th>Name</td>';
+	foreach ($sessions as $session) {
+		echo '<th>' . $session->name . '</th>';
+		echo '<th>ready</th>';
+	}
+	echo '</tr>';
+	
+	foreach ($users as $user) {	    
+		echo '<tr>';
+		echo '<td class="name">'. $user->firstname . ' ' . $user->lastname . '</td>';
+		foreach ($sessions as $session) {
+			$status = notepad_session_status($session, $user->id);
+			echo '<td class="complete">' . $status->complete  . '</td>';
+			echo '<td class="ready">' . $status->ready . '</td>';
+		}
+		echo '</tr>';
+	}
+	echo '</table>';
+	
+}
+
+function notepad_print_completion_user($sessions, $user) {
+	echo '<table class="notepad-status notepad-status-user">';
+	echo '<tr>';
+	foreach ($sessions as $session) {
+		echo '<th>' . $session->name . '</th>';
+		echo '<th>ready</th>';
+	}
+	echo '</tr>';
+	
+  	foreach ($sessions as $session) {
+		$status = notepad_session_status($session, $user->id);
+		echo '<td class="complete">' . $status->complete  . '</td>';
+		echo '<td class="ready">' . $status->ready . '</td>';
+	}
+	echo '</tr>';		
+	echo '</table>';
+}
+
+function notepad_session_status($session, $uid) {
+	global  $DB;
+
+	$questions = $DB->get_records('notepad_questions', array('sid' => $session->id));
+	$qids = array_keys($questions);
+	$status = new stdClass();
+	$status->complete = 0;
+	$status->ready = 'no';
+	
+	if ($qids)  {
+	    $question_responses = $DB->get_records_select('notepad_question_responses', "uid = $uid AND qid IN (" . implode(",",$qids) . ") ");
+	    $number_questions = sizeof($questions);
+		$number_responses = 0;
+				
+		foreach ($question_responses as $response){
+			if ($response->submit_session == 1) {
+				$status->ready = 'yes';
+			}
+			if ($response->response != '') {
+				$number_responses++;
+			}
+		}
+		$status->complete = round($number_responses / $number_questions * 100, 0) . '%';
+    }
+    
+    return $status;
+}
+
 function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $grades) {
     
     global $USER, $OUTPUT, $DB, $CFG;
     
     require_once($CFG->dirroot.'/lib/gradelib.php');
+    if ($entry) {
+	        }
 
     echo "\n<table border=\"1\" cellspacing=\"0\" valign=\"top\" cellpadding=\"10\">";
         
@@ -407,11 +480,26 @@ function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $
     if ($entry) {
         //echo "&nbsp;&nbsp;<font size=\"1\">".get_string("lastedited").": ".userdate($entry->modified)."</font>";
     }
-    echo "</a></h3></td>";
+    echo "</a></h3>";
+    
+    if ($entry) {
+        $notepad  = $DB->get_record('notepad', array('id' => $entry->notepad), '*', MUST_EXIST);
+		if ($session) {
+			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id, 'id' => $session));
+		} else {
+			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id));
+	    }
+
+	    
+    }
+    echo "</td>";
     echo "</tr>";
 
     echo "\n<tr><td width=\"100%\">";
     if ($entry) {
+    	echo "<div class=\"notepad-status\">";
+	    notepad_print_completion_user($sessions, $user);
+	    echo "</div>";
         //echo format_text($entry->text, $entry->format);
     } else {
         echo "No notepad entry";    }
@@ -473,12 +561,7 @@ function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $
 */
         //$nid = $notepad->id;
         echo "</div>";
-		$notepad  = $DB->get_record('notepad', array('id' => $entry->notepad), '*', MUST_EXIST);
-		if ($session) {
-			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id, 'id' => $session));
-		} else {
-			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id));
-	    }
+		
 		if ($sessions) {
 			notepad_print($notepad, $sessions, $user);
 		}

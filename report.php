@@ -68,7 +68,8 @@
 	    $sessions 	  = array () ;
 	}
 	
-	$sessions = $DB->get_records("notepad_sessions", array("nid" => $notepad->id));
+	$sort = 'weight';
+	$sessions = $DB->get_records("notepad_sessions", array("nid" => $notepad->id), $sort);
 	
 	// Group mode
 	$groupmode = groups_get_activity_groupmode($cm);
@@ -86,7 +87,8 @@
 	    $groups = '';
 	}
 
-	$users = get_users_by_capability($context, 'mod/notepad:addentries', '', '', '', '', $groups);
+	$all_users = get_users_by_capability($context, 'mod/notepad:addentries', '', '', '', '', $groups);
+	$users = $all_users;
 		
 	if (!$users) {
 		echo $OUTPUT->heading(get_string("nousersyet"));
@@ -112,7 +114,7 @@ if ($allowedtograde) {
 		echo "<select onchange='window.location.href=this.options[this.selectedIndex].value'>";
 		echo "<option value=''>Show session..</option>";
 		foreach ($sessions as $notepad_session) {
-			echo '<option value="'. $CFG->wwwroot . '/mod/notepad/report.php?n=' . $notepad->id . '&amp;s=' . $notepad_session->id . '">' . $notepad_session->name . '</option>';
+		   	echo '<option value="'. $CFG->wwwroot . '/mod/notepad/report.php?n=' . $notepad->id . '&amp;s=' . $notepad_session->id . '">' . $notepad_session->name . '</option>';
 		}
 		echo '<option value="'. $CFG->wwwroot . '/mod/notepad/report.php?n=' . $notepad->id  . '">All sessions</option>';
 		echo "</select>";
@@ -153,6 +155,8 @@ if ($allowedtograde) {
 			}
 			
 	    }
+	    
+	    notepad_print_completion($sessions, $all_users);
 /*
 if ($allowedtograde) {
 	        echo "<center>";

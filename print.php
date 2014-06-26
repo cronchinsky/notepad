@@ -111,11 +111,12 @@ echo "<h2>$notepad->name</h2>";
 
 if ($sessions) {
   if ($s) {
+    // we are just printing one session
 	$session = $DB->get_records('notepad_sessions', array('nid' => $nid, 'id' => $s));
 	notepad_print($notepad, $session, $USER);
   } else {
   	//echo $OUTPUT->heading($notepad->name);
-  	notepad_print($notepad, $sessions, $USER); 	
+  	notepad_print($notepad, $sessions, $USER); 
   }
 }
 else {

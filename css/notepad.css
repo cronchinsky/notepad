@@ -266,6 +266,30 @@ table.print td.plans {
 	background: #F6F6F6;
 	padding: 5px;
 }
+
+#page-mod-notepad-report table.notepad-status {
+	border-collapse: collapse; 
+}
+
+#page-mod-notepad-report table.notepad-status td, 
+#page-mod-notepad-report table.notepad-status th {
+	border: 1px solid grey;
+	padding: 5px;
+}
+
+table.notepad-status td.complete,
+table.notepad-status td.ready {
+	text-align: center;
+}
+
+table.notepad-status-user {
+/*
+	float: right;
+	margin-top: -20px;
+	margin-right: 20px;
+*/
+}
+
 @media print
   {
   body { 
