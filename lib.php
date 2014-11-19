@@ -869,7 +869,8 @@ function notepad_get_coursemodule_info($coursemodule) {
     return NULL;
  }
     
-    $info = new stdClass();
+    //$info = new stdClass();
+    $info = new cached_cm_info();
     $info->name = $notepad->name;
 	
     if ($notepad->display != RESOURCELIB_DISPLAY_POPUP) {
@@ -880,7 +881,9 @@ function notepad_get_coursemodule_info($coursemodule) {
     $width  = empty($notepad->popupwidth)  ? 620 : $notepad->popupwidth;
     $height = empty($notepad->popupheight) ? 450 : $notepad->popupheight;
     $wh = "width=$width,height=$height,toolbar=no,location=no,menubar=no,copyhistory=no,status=no,directories=no,scrollbars=yes,resizable=yes";
-    $info->extra = "onclick=\"window.open('$fullurl', '', '$wh'); return false;\"";
+    //$info->extra = "onclick=\"window.open('$fullurl', '', '$wh'); return false;\"";
+    $info->onclick = "window.open('$fullurl', '', '$wh'); return false;";
+    //notepad_debug($info);
     return $info;
 }
 
