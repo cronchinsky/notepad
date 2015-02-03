@@ -419,6 +419,7 @@ function notepad_print_completion($sessions, $users) {
 function notepad_print_completion_user($sessions, $user) {
 	echo '<table class="notepad-status notepad-status-user">';
 	echo '<tr>';
+	//notepad_debug($sessions);
 	foreach ($sessions as $session) {
 		echo '<th>' . $session->name . '</th>';
 		echo '<th>ready</th>';
@@ -482,12 +483,13 @@ function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $
     }
     echo "</a></h3>";
     
+    $sort = 'weight';
     if ($entry) {
         $notepad  = $DB->get_record('notepad', array('id' => $entry->notepad), '*', MUST_EXIST);
 		if ($session) {
-			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id, 'id' => $session));
+			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id, 'id' => $session), $sort);
 		} else {
-			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id));
+			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id), $sort);
 	    }
 
 	    

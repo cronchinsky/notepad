@@ -77,7 +77,8 @@ echo $OUTPUT->header();
 
 $nid = $notepad->id;
 
-$sessions = $DB->get_records('notepad_sessions', array('nid' => $nid));
+$sort = 'weight';
+$sessions = $DB->get_records('notepad_sessions', array('nid' => $nid), $sort);
 
 $i = 0;
 $num_sessions = count($sessions);

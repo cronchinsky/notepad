@@ -99,7 +99,7 @@
 	
 	    $grades = make_grades_menu($notepad->grade);
 	    if (!$teachers = get_users_by_capability($context, 'mod/notepad:edit')) {
-	        print_error('noentriesmanagers', 'journal');
+	        print_error('noentriesmanagers', 'notepad');
 	    }
 	
 	    $allowedtograde = (groups_get_activity_groupmode($cm) != VISIBLEGROUPS OR groups_is_member($currentgroup));
