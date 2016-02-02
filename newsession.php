@@ -51,7 +51,8 @@ else {
 
 // Moodley goodness.
 require_login($course, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+//$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
 add_to_log($course->id, 'notepad', 'view', "newsession.php?nid=$nid", $notepad->name, $cm->id);
 
 // Make sure we have an editor.
@@ -79,6 +80,7 @@ if ($mform->is_cancelled()) {
 // Otherwise, if there are results from the form ...
 else if ($results = $mform->get_data()) {
   // Load the data into a problem object and save it to the DB.
+  $session = new stdClass();
   $session->nid = $nid;
   $session->name = $results->session_name;
   $session->directions = $results->directions;

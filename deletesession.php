@@ -47,7 +47,8 @@ else {
 
 // Moodley goodness.
 require_login($course, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+//$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
 add_to_log($course->id, 'notepad', 'view', "deletesession.php?sid=$sid", "Deleting session", $cm->id);
 
 

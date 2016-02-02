@@ -50,8 +50,8 @@ if ($id) {
 
 
 require_login($course, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
-
+//$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
 
 add_to_log($course->id, 'notepad', 'view', "view.php?id={$cm->id}", $notepad->name, $cm->id);
 
@@ -92,8 +92,9 @@ if ($sessions) {
      if (has_capability('mod/notepad:edit', $context)) {
       echo '<li class="'. $row_class. '"><span class="session-name"><a href="' . $CFG->wwwroot . '/mod/notepad/session.php?id=' . $session->id . '">' . $session->name . '</a></span>';
       echo " &nbsp;&nbsp;<a href='editquestions.php?sid=$session->id'> questions <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";
-      echo " &nbsp;&nbsp;<a href='editprobes.php?sid=$session->id'> probes <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";
-      echo " &nbsp;&nbsp;<a href='editactivities.php?sid=$session->id'> activities <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";
+      echo " &nbsp;&nbsp;<a href='editcomparisons.php?sid=$session->id'> comparisons <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";
+      //echo " &nbsp;&nbsp;<a href='editprobes.php?sid=$session->id'> probes <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";
+      //echo " &nbsp;&nbsp;<a href='editactivities.php?sid=$session->id'> activities <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";
       echo " &nbsp;&nbsp;<a href='editsession.php?sid=$session->id&nid=$nid'> session <img src='" . $OUTPUT->pix_url('t/edit') . "' alt='edit' /></a>";
       echo " &nbsp;&nbsp;<a href='deletesession.php?sid=$session->id'> delete <img src='" . $OUTPUT->pix_url('t/delete') . "' alt='delete' /></a>";
     } else {

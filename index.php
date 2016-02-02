@@ -40,7 +40,8 @@ require_course_login($course);
 
 add_to_log($course->id, 'notepad', 'view all', 'index.php?id='.$course->id, '');
 
-$coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+//$coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+$coursecontext = context_course::instance($course->id);
 
 $PAGE->set_url('/mod/notepad/index.php', array('id' => $id));
 $PAGE->set_title(format_string($course->fullname));
