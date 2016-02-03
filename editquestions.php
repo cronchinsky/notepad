@@ -143,7 +143,7 @@ echo "</ul>";
 echo "</div>";
 
 echo "<div class='notepad-manage-form-wrapper'>";
-if ($qid) echo "<p class='notepad-delete-link'><a href='deletequestion.php?qid=$qid'>Delete this question [not implemented yet]</a></p>";
+if ($qid) echo "<p class='notepad-delete-link'><a href='deletequestion.php?sid=$sid&qid=$qid'>Delete this question</a></p>";
 if ($qid) echo "<h4>Editing $questionname</h4>";
 else echo "<h4>Adding a new question</h4>";
 

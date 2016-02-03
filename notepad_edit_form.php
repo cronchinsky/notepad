@@ -24,22 +24,22 @@ class notepad_edit_form extends moodleform {
       //notepad_debug($questions);
       //notepad_debug($comparisons);
       
-      $addtoform = array();     
-       
+      // combine questions and comparison questions 
+      // and sort by weight
+      $addtoform = array();            
       if ($questions)  {       
         foreach ($questions as  $key =>$question)  {          
 	      	$addtoform[$question->weight]['question'][$key] = $question;	         
 				}	        
-      }	 
-      
+      }	       
       if ($comparisons)  {
         foreach ($comparisons as $key => $comparison)  {
 	      	$addtoform[$comparison->weight]['comparison'][$key] = $comparison;         
 				}        
-      }	 
-      
+      }	       
       asort($addtoform);
 
+			// add sorted questions and comparisons to form
       $q_index = 1;
       $c_index = 1;
       foreach ($addtoform as $items) {
@@ -106,16 +106,17 @@ class notepad_edit_form extends moodleform {
         $mform->addElement('editor','textfield_editor', '' ,null,array('maxfiles'=> EDITOR_UNLIMITED_FILES, 'maxbytes' => $maxbytes));	
         $mform->addElement('html', '</p>');
         $mform->addElement('html','</div></li>');	  
-        }
+      }
 	
-				$mform->addElement('html','</ul>'); 
-		            
-        $mform->addElement('html', '</ol>');
-          
-                    
-        $mform->addElement('checkbox', 'question-submit_session','Ready for facilitators');
-         
-        $this->add_action_buttons(false, "Save");
+			$mform->addElement('html','</ul>'); 
+	            
+      $mform->addElement('html', '</ol>');
+        
+      if ($questions) {         
+      	$mform->addElement('checkbox', 'question-submit_session','Ready for facilitators');
+      }
+       
+      $this->add_action_buttons(false, "Save");
           /* $buttonarray=array();
 		  $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
 		  $buttonarray[] = &$mform->createElement('reset', 'resetbutton', get_string('revert'));
