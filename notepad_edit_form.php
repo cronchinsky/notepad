@@ -37,8 +37,8 @@ class notepad_edit_form extends moodleform {
 	      	$addtoform[$comparison->weight]['comparison'][$key] = $comparison;         
 				}        
       }	       
-      asort($addtoform);
-
+      ksort($addtoform);
+      // notepad_debug($addtoform);
 			// add sorted questions and comparisons to form
       $q_index = 1;
       $c_index = 1;
