@@ -19,7 +19,7 @@ if (! $course = $DB->get_record("course", array("id"=>$notepad->course))) {
 
 require_login($course, false, $cm);
 
-if (has_capability('mod/notepad:grade', context_module::instance($cm->id)))) {
+if (has_capability('mod/notepad:grade', context_module::instance($cm->id))) {
     redirect('report.php?id='.$cm->id);
 } else {
     redirect('view.php?id='.$cm->id);
