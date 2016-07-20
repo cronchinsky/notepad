@@ -29,8 +29,11 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
-$module->version   = 2014062401;               // If version == 0 then module will not be installed
-$module->requires  = 2010031900;      // Requires this Moodle version
-$module->cron      = 0;               // Period for cron to check this module (secs)
-$module->component = 'mod_notepad'; // To check on upgrade, that module sits in correct place
+ 
+$plugin->version   = 2016071901;
+$plugin->requires  = 2015111600;
+$plugin->cron			 = 0;
+$plugin->component = 'mod_notepad';
+$plugin->maturity  = MATURITY_BETA;
+$plugin->release   = 'v3.0';
+ 
