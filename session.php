@@ -153,6 +153,7 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 
    
     $timenow = time();
+    $newentry = new stdClass();
     $newentry->modified = $timenow;
  
  	if ($entry) {
@@ -237,7 +238,8 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 				    $new_response->submit_session = $form_question['submit_session'];      	
 
 				    // check if they had previously submitted the session to facilitors
-				    $prev_question_responses_id = array_shift(array_keys($prev_question_responses));
+				    $key_arr = array_keys($prev_question_responses);
+				    $prev_question_responses_id = array_shift($key_arr);
 				    $ready_response = $prev_question_responses[$prev_question_responses_id]->submit_session;
 
 				    if (!$ready_response) {

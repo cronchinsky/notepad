@@ -1,4 +1,4 @@
-$(function() {    
+$(function($) {    
 
 	$('[name=submitbutton]').click(function () {
         $(this).removeClass('needs-save');
@@ -16,7 +16,6 @@ $(function() {
 	$('a.toggleLink').click(function() {
 		// toggle the display
 		$(this).parents().eq(2).nextAll('.toggle').toggle('fast');
-		
 		// return false so any link destination is not followed
 		return false;		
 	});
