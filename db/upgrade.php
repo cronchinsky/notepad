@@ -200,7 +200,7 @@ function xmldb_notepad_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2014062401, 'notepad');
     }
     
-    if ($oldversion < 2016012902) {
+    if ($oldversion < 2016080700) {
 
          // Define table notepad_comparisons to be created.
         $table = new xmldb_table('notepad_comparisons');
@@ -240,10 +240,10 @@ function xmldb_notepad_upgrade($oldversion) {
         }
         
         // Notes savepoint reached.
-        upgrade_mod_savepoint(true, 2016012902, 'notepad');
+        upgrade_mod_savepoint(true, 2016080700, 'notepad');
     }
     
-    if ($oldversion < 2016013000) {
+    if ($oldversion < 2016080701) {
 
         // Rename field cid on table notepad_comparison_responses to NEWNAMEGOESHERE.
         $table = new xmldb_table('notepad_comparison_responses');
@@ -252,9 +252,9 @@ function xmldb_notepad_upgrade($oldversion) {
         // Launch rename field cid.
         $dbman->rename_field($table, $field, 'cid');
         // Notes savepoint reached.
-        upgrade_mod_savepoint(true, 2016013000, 'notepad');
+        upgrade_mod_savepoint(true, 2016080701, 'notepad');
     }
-    if ($oldversion < 2016013001) {
+    if ($oldversion < 2016080702) {
 
         // Rename field responsea on table notepad_comparison_responses to NEWNAMEGOESHERE.
         $table = new xmldb_table('notepad_comparison_responses');
@@ -269,7 +269,7 @@ function xmldb_notepad_upgrade($oldversion) {
         $dbman->rename_field($table, $field, 'responseb');
 
         // Notes savepoint reached.
-        upgrade_mod_savepoint(true, 2016013001, 'notepad');
+        upgrade_mod_savepoint(true, 2016080702, 'notepad');
     }
 
   return true;
