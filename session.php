@@ -68,7 +68,8 @@ else {
 
 // This is some moodle stuff that seems to be necessary :)
 require_login($course, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+//$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
 
 // Log this page view.
 add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session->name, $cm->id);
@@ -97,12 +98,19 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 	$activities = $DB->get_records('notepad_activities', array('sid' => $session->id));
 	$aids = array_keys($activities);
 	
-	$questions = $DB->get_records('notepad_questions', array('sid' => $session->id), 'id');
+	$questions = $DB->get_records('notepad_questions', array('sid' => $session->id), 'weight');
 	$qids = array_keys($questions);
+	//notepad_debug($questions);
 	
+	$comparisons = $DB->get_records('notepad_comparisons', array('sid' => $session->id), 'weight');
+	$cids = array_keys($comparisons);
+	//notepad_debug($comparisons);
+
+
 	$prev_probe_responses = array();
 	$prev_activity_responses = array();
 	$prev_question_responses = array();
+	$prev_comparison_responses = array();
 	
 	$directions = $session->directions;
 	
@@ -117,43 +125,53 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 	if ($qids) {
 		$prev_question_responses = $DB->get_records_select('notepad_question_responses', "uid = $USER->id AND qid IN (" . implode(",",$qids) . ") ");
 	} 
-
-    if ($session->wysiwyg) {
-      $maxfiles = 99;             // TODO: add some setting
-      $maxbytes = $CFG->maxbytes; // TODO: add some settin
-      $definitionoptions = array('trusttext'=>true, 'subdirs'=>false, 'maxfiles'=>$maxfiles, 'maxbytes'=>$maxbytes, 'context'=>$context);
-      if ($session_wysiwyg = $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $USER->id))) {
-		  $session_wysiwyg = file_prepare_standard_editor($session_wysiwyg, 'textfield', $definitionoptions, $context, 'mod_notepad', 'notepad', $session_wysiwyg->id);
-	      // store the updated value values
-	      $DB->update_record('notepad_wysiwyg', $session_wysiwyg);
 	
-	      //refetch complete entry
-	      $session_wysiwyg = $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $USER->id));
-      } else {
-          $session_wysiwyg->uid = $USER->id;
-          $session_wysiwyg->sid = $session->id;
-          $session_wysiwyg->textfield = '';
-          $session_wysiwyg->textfieldtrust = 0;
-          $session_wysiwyg->textfieldformat = FORMAT_HTML;
-	      $session_wysiwyg->id = $DB->insert_record('notepad_wysiwyg', $session_wysiwyg);
-      }
-    }
-	$mform = new notepad_edit_form("/mod/notepad/session.php?id={$session->id}", array('probes' => $probes, 'activities' => $activities, 'questions' => $questions, 'session' => $session, 'context' => $context));
+	if ($cids) {
+	  //$cid_string = implode(",",$cids);
+	  //$sql = "SELECT * FROM {notepad_comparison_responses} WHERE uid = ? AND cid IN (?) order by field(weight, ?)";
+	  //$prev_comparison_responses = $DB->get_records_sql($sql, array($USER->id, $cid_string, $cid_string));
+		$prev_comparison_responses = $DB->get_records_select('notepad_comparison_responses', "uid = $USER->id AND cid IN (" . implode(",",$cids) . ")");
+	} 
 
- if ($responses = $mform->get_data()) {
-    
-    if (empty($responses->id)) {
+
+  if ($session->wysiwyg) {
+    $maxfiles = 99;             // TODO: add some setting
+    $maxbytes = $CFG->maxbytes; // TODO: add some settin
+    $definitionoptions = array('trusttext'=>true, 'subdirs'=>false, 'maxfiles'=>$maxfiles, 'maxbytes'=>$maxbytes, 'context'=>$context);
+    if ($session_wysiwyg = $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $USER->id))) {
+	  	$session_wysiwyg = file_prepare_standard_editor($session_wysiwyg, 'textfield', $definitionoptions, $context, 'mod_notepad', 'notepad', $session_wysiwyg->id);
+      // store the updated value values
+      $DB->update_record('notepad_wysiwyg', $session_wysiwyg);
+
+      //refetch complete entry
+      $session_wysiwyg = $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $USER->id));
+    } else {
+        $session_wysiwyg->uid = $USER->id;
+        $session_wysiwyg->sid = $session->id;
+        $session_wysiwyg->textfield = '';
+        $session_wysiwyg->textfieldtrust = 0;
+        $session_wysiwyg->textfieldformat = FORMAT_HTML;
+				$session_wysiwyg->id = $DB->insert_record('notepad_wysiwyg', $session_wysiwyg);
+    }
+  }
+	$mform = new notepad_edit_form("/mod/notepad/session.php?id={$session->id}", array('probes' => $probes, 'activities' => $activities, 'questions' => $questions, 'comparisons' => $comparisons, 'session' => $session, 'context' => $context));
+
+	if ($responses = $mform->get_data()) {
+    //notepad_debug($responses);
+    if (empty($responses->id) && ($session->wysiwyg)) {
         $responses->id            = $session_wysiwyg->id;
     }
     $responses->textfield        = '';          // updated later
     $responses->textfieldformat  = FORMAT_HTML; // updated later
     $responses->textfieldtrust   = 0;           // updated later
     $responses->sid	             = $session->id;
-    $responses->uid				 = $USER->id;
+    $responses->uid				 			 = $USER->id;
 
    
     $timenow = time();
+
     $newentry = new stdClass();
+
     $newentry->modified = $timenow;
  
  	if ($entry) {
@@ -185,6 +203,10 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
   if ($qids) {
   	$DB->delete_records_select('notepad_question_responses',"qid IN (" . implode(",",$qids) . ") AND uid = $USER->id");
   }
+  
+  if ($cids) {
+  	$DB->delete_records_select('notepad_comparison_responses',"cid IN (" . implode(",",$cids) . ") AND uid = $USER->id");
+  }
  
   $form_items = array();
   $form_question = array(); 
@@ -194,10 +216,11 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
        
     $exploded_key = explode("-",$key);
     
-    $keysize = sizeof($exploded_key);    
+    $keysize = sizeof($exploded_key);  
+    //notepad_debug($key);
+    //notepad_debug($keysize);  
     
-    if ($keysize == 3) {
-  
+    if ($keysize == 3) { 
     	list($table, $field, $item_id) = $exploded_key; 		
     	$form_items[$table][$item_id][$field] = $response;
     	
@@ -212,9 +235,10 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
      //notepad_debug($responses);
      //notepad_debug($form_items);
      //break;
+     $ready = '&ready=0';
      foreach ($form_items as $table => $item_ids) {
    	    foreach ($item_ids as $item_id => $fields) {
-		      
+		      //notepad_debug($table);
 		      $new_response = new stdClass();
 
 		      $new_response->uid = $USER->id;
@@ -228,11 +252,13 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 		      	$new_response->aid = $item_id;
 		      	$new_response->plans = $fields['plans'];
 		      	if (array_key_exists("useradio",$fields))  $new_response->useradio = $fields['useradio'];
-		      } else {
-
-			    
-			    $new_response->qid = $item_id;
-			    $new_response->response = $fields['response'];
+					} else if ($table == 'comparison') {
+		      	$new_response->cid = $item_id;
+		      	$new_response->responsea = $fields['responsea'];
+		      	$new_response->responseb = $fields['responseb'];
+		      } else {			    
+			    	$new_response->qid = $item_id;
+						$new_response->response = $fields['response'];
 			   
 			    if (array_key_exists("submit_session", $form_question)) {
 				    $new_response->submit_session = $form_question['submit_session'];      	
@@ -246,12 +272,10 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 					    // send a message on reload
 					    $ready = '&ready=1';
 					    }
-					}
-
-
-		       } 
-		       //notepad_debug($new_response);
-		       //notepad_debug($table);
+						}
+		      } 
+		      //notepad_debug($new_response);
+		      //notepad_debug($table);
 		      $DB->insert_record('notepad_' . $table . '_responses',$new_response);
     	}
     
@@ -279,6 +303,14 @@ foreach ($prev_question_responses as $response) {
 }
 
 
+foreach ($prev_comparison_responses as $response) {
+  
+	$form_data['comparison-responsea-' . $response->cid] = $response->responsea; 
+	$form_data['comparison-responseb-' . $response->cid] = $response->responseb; 
+
+}
+
+
 
 foreach ($prev_probe_responses as $response) {
   
@@ -299,6 +331,7 @@ if ($session->wysiwyg) {
   $currenttext = file_prepare_draft_area($draftid_editor,$context->id,'mod_notepad','notepad', $session_wysiwyg->id, array('subdirs'=>true),$session_wysiwyg->textfield);
   $form_data['textfield_editor'] = array('text'=>$currenttext,'format'=>$session_wysiwyg->textfieldformat,'itemid'=>$draftid_editor);
 }
+//notepad_debug($form_data);
 
 $mform->set_data($form_data);
 

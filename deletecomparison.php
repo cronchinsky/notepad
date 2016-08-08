@@ -26,16 +26,18 @@
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/lib.php');
 
-// Pull the pid
+// Pull the parameters
 $sid = optional_param('sid', 0, PARAM_INT); // session id
+$qid = optional_param('qid', 0, PARAM_INT); // question id
 $confirm = optional_param('confirm', 0, PARAM_INT); // 
 
 // Get the problem from the pid
-$session = $DB->get_record('notepad_sessions', array('id' => $sid));
-if (!$session) {
-  print_error('That session does not exist.  It cannot be deleted');
+$question = $DB->get_record('notepad_comparisons', array('id' => $qid));
+if (!$question) {
+  print_error('That question does not exist.  It cannot be deleted');
 }
 
+$session = $DB->get_record('notepad_sessions', array('id' => $sid));
 $notepad = $DB->get_record('notepad', array('id' => $session->nid));
 $course = $DB->get_record('course', array('id' => $notepad->course));
 if ($course->id) {
@@ -49,40 +51,26 @@ else {
 require_login($course, true, $cm);
 //$context = get_context_instance(CONTEXT_MODULE, $cm->id);
 $context = context_module::instance($cm->id);
-add_to_log($course->id, 'notepad', 'view', "deletesession.php?sid=$sid", "Deleting session", $cm->id);
+add_to_log($course->id, 'notepad', 'view', "deletequestion.php?qid=$qid", "Deleting question", $cm->id);
 
 
 // Only editors can see this page.
 require_capability('mod/notepad:edit', $context);
 
 
-if ($confirm && $sid) {
-  $probes = $DB->get_records('notepad_probes',array('sid' => $session->id));
-  if ($probes) {
-    $DB->delete_records_list('notepad_probe_responses', 'pid', array_keys($probes));
-    $DB->delete_records('notepad_probes', array('sid' => $session->id));
+if ($confirm && $qid) {
+  $responses = $DB->get_records('notepad_comparison_responses',array('cid' => $qid));
+  if ($responses) {
+    $DB->delete_records_list('notepad_comparison_responses', 'id', array_keys($responses));
   }
+  $DB->delete_records('notepad_comparisons', array('id' => $qid));
   
-  $activities = $DB->get_records('notepad_activities',array('sid' => $session->id));
-  if ($activities) {
-    $DB->delete_records_list('notepad_activity_responses', 'aid', array_keys($activities));
-    $DB->delete_records('notepad_activities', array('sid' => $session->id));
-  }
-  
-  $questions = $DB->get_records('notepad_questions',array('sid' => $session->id));
-  if ($questions)  {
-  	$DB->delete_records_list('notepad_question_responses', 'qid', array_keys($questions));
-    $DB->delete_records('notepad_questions', array('sid' => $session->id));
-  }
-  
-  $DB->delete_records('notepad_sessions',array('id' => $session->id));
-  
-  redirect("view.php?n=$notepad->id");
+  redirect("editcomparisons.php?sid=$sid");
 }
 
 // Set the page header.
-$PAGE->set_url('/mod/notepad/deletesession.php', array('sid' => $sid));
-$PAGE->set_title(format_string("Delete Session."));
+$PAGE->set_url('/mod/notepad/deletecomparison.php', array('qid' => $qid, 'sid' => $sid));
+$PAGE->set_title(format_string("Delete Comparison Question."));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 $PAGE->add_body_class('notepad-delete-session');
@@ -97,7 +85,7 @@ echo $OUTPUT->header();
 
 
 
-echo $OUTPUT->confirm("Are you sure you want to delete $session->name?  Any notepad entries will be lost.","deletesession.php?sid=$sid&confirm=1","view.php?n=$notepad->id");
+echo $OUTPUT->confirm("Are you sure you want to delete this comparison question?  Any responses will be lost.","deletecomparison.php?qid=$qid&sid=$sid&confirm=1","view.php?n=$notepad->id");
 
 echo $OUTPUT->footer();
 

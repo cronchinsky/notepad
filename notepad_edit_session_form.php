@@ -12,6 +12,8 @@ class notepad_edit_session_form extends moodleform {
 
         $mform->addElement('text', 'name', get_string('session_name', 'notepad'));
         $mform->addRule('name', 'This field is required', 'required');
+        $mform->setType('name',  PARAM_NOTAGS); 
+
         $mform->addElement('textarea', 'directions', get_string('directions', 'notepad'),'wrap="virtual" rows="3" cols="65"');
         
         $mform->addElement('advcheckbox','wysiwyg', 'WYSIWYG','WYSIWYG Field',array('group'=>1),array(0,1));

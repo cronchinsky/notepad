@@ -199,5 +199,78 @@ function xmldb_notepad_upgrade($oldversion) {
         // notes savepoint reached
         upgrade_mod_savepoint(true, 2014062401, 'notepad');
     }
-    return true;
+    
+    if ($oldversion < 2016012902) {
+
+         // Define table notepad_comparisons to be created.
+        $table = new xmldb_table('notepad_comparisons');
+
+        // Adding fields to table notepad_comparisons.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('sid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('question', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('label_a', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('label_b', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('weight', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table notepad_comparisons.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for notepad_comparisons.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        
+                // Define table notepad_comparison_responses to be created.
+        $table = new xmldb_table('notepad_comparison_responses');
+
+        // Adding fields to table notepad_comparison_responses.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('qid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('uid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('response_a', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('response_b', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table notepad_comparison_responses.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for notepad_comparison_responses.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        
+        // Notes savepoint reached.
+        upgrade_mod_savepoint(true, 2016012902, 'notepad');
+    }
+    
+    if ($oldversion < 2016013000) {
+
+        // Rename field cid on table notepad_comparison_responses to NEWNAMEGOESHERE.
+        $table = new xmldb_table('notepad_comparison_responses');
+        $field = new xmldb_field('qid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'id');
+
+        // Launch rename field cid.
+        $dbman->rename_field($table, $field, 'cid');
+        // Notes savepoint reached.
+        upgrade_mod_savepoint(true, 2016013000, 'notepad');
+    }
+    if ($oldversion < 2016013001) {
+
+        // Rename field responsea on table notepad_comparison_responses to NEWNAMEGOESHERE.
+        $table = new xmldb_table('notepad_comparison_responses');
+        $field = new xmldb_field('response_a', XMLDB_TYPE_TEXT, null, null, null, null, null, 'uid');
+
+        // Launch rename field responsea.
+        $dbman->rename_field($table, $field, 'responsea');
+        
+        $field = new xmldb_field('response_b', XMLDB_TYPE_TEXT, null, null, null, null, null, 'uid');
+
+        // Launch rename field responsea.
+        $dbman->rename_field($table, $field, 'responseb');
+
+        // Notes savepoint reached.
+        upgrade_mod_savepoint(true, 2016013001, 'notepad');
+    }
+
+  return true;
 }

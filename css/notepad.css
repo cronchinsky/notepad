@@ -1,4 +1,9 @@
-#page-mod-notepad-session #page-header {
+body.pagelayout-popup {
+    background: none !important;
+}
+
+#page-mod-notepad-session #page-header,
+#page-mod-notepad-view #page-header {
 	display: none;
 }
 
@@ -17,6 +22,10 @@
 #page-mod-notepad-session .mform .fitem .fsubmit {
 	text-align: center;
 } 
+
+.femptylabel .fitemtitle {
+	display: none;
+}
 
 #page-mod-notepad-session h2.main {
 	background-image: url("images/notebook_60px.png");
@@ -44,6 +53,7 @@ fieldset#session-notepad {
 
 ol.notepad li {
 	margin-bottom: 10px;
+	clear: left;
 }
 
 .mform .wysiwyg .fitem .fitemtitle {
@@ -173,11 +183,21 @@ span.session-name  {
 .message {
 	color: green;
 	margin: 30px 0;
-
 		
 }
 
-
+li.notepad-comparison {
+	clear: left;
+}
+div.notepad-comparison {
+	width: 49%;
+	float: left;
+	padding-top: 4px;
+}
+ 
+#page-mod-notepad-session .mform div.notepad-comparison .fitem {
+	margin-top: 1px;
+}
 
 #page-mod-notepad-session #frametop, 
 #page-mod-notepad-session #footerframetop {
@@ -301,4 +321,11 @@ table.notepad-status-user {
   	display:none; 
   }
 
-  }
+}
+
+ 
+@media (max-width: 1199px) {
+	#region-main .mform:not(.unresponsive) .femptylabel .fitemtitle {
+	    display: none;
+	}
+}

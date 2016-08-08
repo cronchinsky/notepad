@@ -71,7 +71,10 @@ function notepad_add_instance(stdClass $notepad, mod_notepad_mod_form $mform = n
 
     $notepad->timecreated = time();
     $cmid        = $notepad->coursemodule;
-    $draftitemid = $notepad->notepad['itemid'];
+    
+    //this link causing a notice and can't figure out what is it doing.. 
+    //doesn't seem to be needed.
+    //$draftitemid = $notepad->notepad['itemid'];
 
     
     $returnid = $DB->insert_record('notepad', $notepad);
@@ -378,7 +381,8 @@ function notepad_get_users_done($notepad, $currentgroup) {
     // remove unenrolled participants
     foreach ($notepads as $key => $user) {
         
-        $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+        //$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+        $context = context_module::instance($cm->id);
         
         $canadd = has_capability('mod/notepad:addentries', $context, $user);
         $entriesmanager = has_capability('mod/notepad:edit', $context, $user);
@@ -584,7 +588,8 @@ function notepad_print($notepad, $sessions,$user)  {
     $course = $DB->get_record('course', array('id' => $notepad->course));
     if ($course->id) {
 	    $cm = get_coursemodule_from_instance('notepad', $notepad->id, $course->id, false, MUST_EXIST);
-	    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+	    //$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+	    $context = context_module::instance($cm->id);
 	    }
 	else {
 		error('Could not find the course!');
@@ -603,10 +608,14 @@ function notepad_print($notepad, $sessions,$user)  {
 	$questions = $DB->get_records('notepad_questions', array('sid' => $session->id));
 	$qids = array_keys($questions);
 	
+	$comparisons = $DB->get_records('notepad_comparisons', array('sid' => $session->id));
+	$cids = array_keys($comparisons);
+	
 	
 	$prev_probe_responses = array();
 	$prev_activity_responses = array();
 	$prev_question_responses = array();
+	$prev_comparison_responses = array();
 	
 	if ($pids) {
 		$prev_probe_responses = $DB->get_records_select('notepad_probe_responses', "uid = $user->id AND pid IN (" . implode(",",$pids) . ") ");
@@ -618,6 +627,10 @@ function notepad_print($notepad, $sessions,$user)  {
 	
 	if ($qids)  {
 		$prev_question_responses = $DB->get_records_select('notepad_question_responses', "uid = $user->id AND qid IN (" . implode(",",$qids) . ") ");
+	}
+	
+	if ($cids)  {
+		$prev_comparison_responses = $DB->get_records_select('notepad_comparison_responses', "uid = $user->id AND cid IN (" . implode(",",$cids) . ") ");
 	}
 	
     $session_wysiwyg =  $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $user->id));
@@ -636,6 +649,16 @@ function notepad_print($notepad, $sessions,$user)  {
     		if ($response->qid == $question->id)  {
     			echo "<li><p>" . $question->question . "</p>";
     			echo "<p class='question-response'>" . $response->response . "</p></li>";
+    		}
+       }
+    }
+	
+	 foreach ($comparisons as $comparison) {
+       foreach ($prev_comparison_responses as $response) {
+    		if ($response->cid == $comparison->id)  {
+    			echo "<li><p>" . $comparison->question . "</p>";
+    			echo "<p class='comparison-response'>" . $comparison->label_a . ': ' . $response->responsea . "</p>";
+    			echo "<p class='comparison-response'>" . $comparison->label_b . ': ' . $response->responseb . "</p></li>";
     		}
        }
     }
@@ -831,6 +854,32 @@ function notepad_add_question_to_form($item, &$mform, $index, $type) {
   $mform->addElement('html',"$item->question");
 
   $mform->addElement('textarea', "$type-response-$item->id", '', 'wrap="virtual" rows="3" cols="100"', array('class'=> 'question'));
+  
+  $mform->addElement('html','</li>');
+  
+}
+
+function notepad_add_comparison_to_form($item, &$mform, $index, $type) {
+  
+  $mform->addElement('html',"<li class='notepad-comparison'>");
+  
+  $mform->addElement('html',"$item->question" . "<br />");
+
+	$mform->addElement('html',"<div class='notepad-comparison notepad-comparison-a'>");
+
+	$mform->addElement('html',"$item->label_a");
+
+  $mform->addElement('textarea', "$type-responsea-$item->id", '', 'wrap="virtual" rows="3" cols="45"', array('class'=> 'comparison'));
+  
+  $mform->addElement('html',"</div>");
+  
+  $mform->addElement('html',"<div class='notepad-comparison notepad-comparison-b'>");
+
+  $mform->addElement('html',"$item->label_b");
+
+  $mform->addElement('textarea', "$type-responseb-$item->id", '', 'wrap="virtual" rows="3" cols="45"', array('class'=> 'comparison'));
+  
+  $mform->addElement('html',"</div>");
   
   $mform->addElement('html','</li>');
   

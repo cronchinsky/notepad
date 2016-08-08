@@ -45,7 +45,8 @@
     $PAGE->set_url($url);
 
     require_login($course, false, $cm);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    //$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    $context = context_module::instance($cm->id);
     $PAGE->set_pagelayout('report');
     $PAGE->requires->css('/mod/notepad/css/notepad.css');
     $PAGE->requires->js('/mod/notepad/scripts/jquery.min.js');

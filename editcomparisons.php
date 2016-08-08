@@ -27,7 +27,7 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/lib.php');
 
 // Include the edit form.
-require_once(dirname(__FILE__) . '/notepad_edit_question_form.php');
+require_once(dirname(__FILE__) . '/notepad_edit_comparison_form.php');
 
 // Pull the sid and/or qid from the url.
 $sid = optional_param('sid', 0, PARAM_INT); // session ID
@@ -52,18 +52,18 @@ else {
 require_login($course, true, $cm);
 //$context = get_context_instance(CONTEXT_MODULE, $cm->id);
 $context = context_module::instance($cm->id);
-add_to_log($course->id, 'notepad', 'view', "editquestions.php?sid=$sid", $session->name, $cm->id);
+add_to_log($course->id, 'notepad', 'view', "editcomparisons.php?sid=$sid", $session->name, $cm->id);
 
 
 // Only editors can see this page.
 require_capability('mod/notepad:edit', $context);
 
 // Set the page header. Needs to happen before the form code in order to stick, but I'm not sure why - CR
-$PAGE->set_url('/mod/notepad/editquestions.php', array('sid' => $sid, 'qid' => $qid));
-$PAGE->set_title(format_string("Editing questions."));
+$PAGE->set_url('/mod/notepad/editcomparisons.php', array('sid' => $sid, 'qid' => $qid));
+$PAGE->set_title(format_string("Editing comparison questions."));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
-$PAGE->add_body_class('notepad-question-edit-form');
+$PAGE->add_body_class('notepad-comparison-edit-form');
 
 // Sort CSS styles.
 $PAGE->requires->css('/mod/notepad/css/notepad.css');
@@ -71,26 +71,26 @@ $PAGE->requires->css('/mod/notepad/css/notepad.css');
 notepad_set_display_type($notepad);
 
 // All question for the session.
-$questions = $DB->get_records('notepad_questions', array('sid' => $session->id), 'weight');
-
-$question = NULL;
+$questions = $DB->get_records('notepad_comparisons', array('sid' => $session->id), 'weight');
 
 // If there's a qid in the url, we're editing an exisitng question
 if ($qid != 0) {
   // Get a question to load 
-  $question = $DB->get_record('notepad_questions', array('id' => $qid));
+  $question = $DB->get_record('notepad_comparisons', array('id' => $qid));
   // If there are no questions, the qid is funky.
   if (!$question) {
-    print_error('Can not find any questions');
+    print_error('Can not find any comparison questions');
   }
   // This helps with the form.  questionname is the form element's name
   $question->questionname = $question->question;
   $questionname = $question->question;
+} else {
+	$question = new stdClass();
 }
 
 
 // Load the form.
-$mform = new notepad_edit_question_form("/mod/notepad/editquestions.php?sid=$sid&qid=$qid", array('questions' => $questions, 'this_question' => $question));
+$mform = new notepad_edit_comparison_form("/mod/notepad/editcomparisons.php?sid=$sid&qid=$qid", array('questions' => $questions, 'this_question' => $question));
 
 // If the form was cancelled, redirect.
 if ($mform->is_cancelled()) {
@@ -107,45 +107,50 @@ else {
   }
   // If there's data in the form...
   if ($results = $mform->get_data()) {
+    //notepad_debug($results);
+    //break;
     $question->question = $results->question;
+    $question->label_a = $results->label_a;
+    $question->label_b = $results->label_b;
     $question->weight = $results->weight;
+
     // If the the data is for a new question...
     if ($qid == 0) {
       // Save the question as a new record.
-      $question->sid = $sid;      
-      $new_record = $DB->insert_record('notepad_questions', $question);
+      $question->sid = $sid;
+      $new_record = $DB->insert_record('notepad_comparisons', $question);
     }
     else {
       // We're updaing existing work.
-      $updated_record = $DB->update_record('notepad_questions', $question);
+      $updated_record = $DB->update_record('notepad_comparisons', $question);
     }
     // Now redirect back to the problem page with the new / updated data.
-    redirect("editquestions.php?sid=$sid");
+    redirect("editcomparisons.php?sid=$sid");
   }
 }
 
 // Begin page output
 echo $OUTPUT->header();
-echo $OUTPUT->heading("Manage questions for {$session->name}");
+echo $OUTPUT->heading("Manage comparison questions for {$session->name}");
 
 echo "<div class='notepad-question-wrapper'>";
 
 echo "<div class='notepad-question-pager'>";
-echo "<h4>Select a question to edit,<br /> or click \"Add New\" to create a new question.</h4>";
+echo "<h4>Select a question to edit,<br /> or click \"Add New\" to create a new comparison question.</h4>";
 echo "<ul>";
 foreach ($questions as $question) {
   $class = ($qid == $question->id) ? "class=\"notepad-pager-current\"" : ""; 
-  echo '<li ' . $class . '><a href="' . $CFG->wwwroot . '/mod/notepad/editquestions.php?sid=' . $question->sid . '&amp;qid=' . $question->id . '">' . $question->question . '</a></li>';
+  echo '<li ' . $class . '><a href="' . $CFG->wwwroot . '/mod/notepad/editcomparisons.php?sid=' . $question->sid . '&amp;qid=' . $question->id . '">' . $question->question . '</a></li>';
 }
 $class = (!$qid) ? ' class="notepad-pager-current" ' : "";
-echo '<li' . $class . '><a href="' . $CFG->wwwroot . '/mod/notepad/editquestions.php?sid=' . $session->id . '">Add New</a></li>';
+echo '<li' . $class . '><a href="' . $CFG->wwwroot . '/mod/notepad/editcomparisons.php?sid=' . $session->id . '">Add New</a></li>';
 echo "</ul>";
 echo "</div>";
 
 echo "<div class='notepad-manage-form-wrapper'>";
-if ($qid) echo "<p class='notepad-delete-link'><a href='deletequestion.php?sid=$sid&qid=$qid'>Delete this question</a></p>";
+if ($qid) echo "<p class='notepad-delete-link'><a href='deletecomparison.php?qid=$qid&sid=$sid'>Delete this comparison question</a></p>";
 if ($qid) echo "<h4>Editing $questionname</h4>";
-else echo "<h4>Adding a new question</h4>";
+else echo "<h4>Adding a new comparison question</h4>";
 
 //displays the form
 $mform->display();
