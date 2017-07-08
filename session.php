@@ -63,9 +63,9 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 
 // don't allow the u parameter to apply to reqular students
-if (!(has_capability('mod/notepad:edit', $context))) {
+if (!(has_capability('mod/notepad:edit', $context)) || (!$user)) {
   $session_user_id = $USER->id;
-  $session_user_fullname = $USER->firstname . ' ' . $user->lastname;
+  $session_user_fullname = $USER->firstname . ' ' . $USER->lastname;
 } else {
   $session_user_id = $user;
   $session_user = $DB->get_record('user', array('id' => $session_user_id));
@@ -166,7 +166,7 @@ if ($ready) {
 				$session_wysiwyg->id = $DB->insert_record('notepad_wysiwyg', $session_wysiwyg);
     }
   }
-	$mform = new notepad_edit_form("/mod/notepad/session.php?id={$session->id}", array('probes' => $probes, 'activities' => $activities, 'questions' => $questions, 'comparisons' => $comparisons, 'session' => $session, 'context' => $context));
+	$mform = new notepad_edit_form("/mod/notepad/session.php?id={$session->id}&u={$session_user_id}", array('probes' => $probes, 'activities' => $activities, 'questions' => $questions, 'comparisons' => $comparisons, 'session' => $session, 'context' => $context));
 
 	if ($responses = $mform->get_data()) {
     //notepad_debug($responses);
@@ -300,7 +300,7 @@ if ($ready) {
       $DB->update_record('notepad_wysiwyg', $responses);
     }
    
-  redirect("session.php?id=$id&newSave=1$ready");
+  redirect("session.php?id=$id&u=$session_user_id&newSave=1$ready");
 }
 
 // set existing data.
@@ -351,13 +351,13 @@ $mform->set_data($form_data);
   // Output starts here
   
 echo $OUTPUT->header();
-echo $OUTPUT->heading($notepad->name);
+echo '<div id="notepad-header">' . $OUTPUT->heading($notepad->name) . '</div>';
 
 /*
 $i = 0;
 $num_sessions = count($sessions);
 */
-echo '<h1>' . $session_user_fullname . '</h1>';
+echo '<div id="notepad-fullname">' . '<h3>' . $session_user_fullname . '</h3></div>';
 if (has_capability('mod/notepad:edit', $context)) {
   $all_users = get_users_by_capability($context, 'mod/notepad:addentries', '', '', '', '', $groups);
 	$users = $all_users;
@@ -377,7 +377,7 @@ echo "<form>";
 echo "<select onchange='window.location.href=this.options[this.selectedIndex].value'>";
 echo "<option value=''>Go to..</option>";
 foreach ($sessions as $notepad_session) {
-  echo '<option value="'. $CFG->wwwroot . '/mod/notepad/session.php?id=' . $notepad_session->id . '">' . $notepad_session->name . '</option>';
+  echo '<option value="'. $CFG->wwwroot . '/mod/notepad/session.php?id=' . $notepad_session->id . '&u=' . $session_user_id .'">' . $notepad_session->name . '</option>';
 }
 echo '<option value="'. $CFG->wwwroot . '/mod/notepad/print.php?n=' . $notepad->id . '&amp;sid=' . $session->id  . '">Print my notebook</option>';
 echo "</select>";
