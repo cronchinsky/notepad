@@ -31,10 +31,18 @@ require_once(dirname(__FILE__) . '/notepad_edit_form.php');
 
 // Grab the sid from the url
 $id = optional_param('id', 0, PARAM_INT); // session ID
+$user =  optional_param('u', 0, PARAM_INT);
 $newSave = optional_param('newSave', 0, PARAM_INT);
 $ready = optional_param('ready', 0, PARAM_INT);
 $message = '';
 
+if ($user) {
+  $session_user = $user;
+} else {
+  $session_user = $USER->id;
+}
+
+$session_user = ($user ? $user: $USER->id);
 
 // Load the session from the url ID
 $session = $DB->get_record('notepad_sessions', array('id' => $id));
@@ -345,6 +353,21 @@ echo $OUTPUT->heading($notepad->name);
 $i = 0;
 $num_sessions = count($sessions);
 */
+echo '<h1>' . $session_user . '</h1>';
+if (has_capability('mod/notepad:edit', $context)) {
+  $all_users = get_users_by_capability($context, 'mod/notepad:addentries', '', '', '', '', $groups);
+	$users = $all_users;
+  echo "<div class='notepad-user-list'><form>";
+  echo "<select onchange='window.location.href=this.options[this.selectedIndex].value'>";
+		
+	echo "<option value=''>Show user..</option>";
+	foreach ($users as $user_id => $user) {
+		echo '<option value="'. $CFG->wwwroot . '/mod/notepad/session.php?id=' . $id . '&amp;u=' . $user->id . '">' . $user->firstname . ' ' . $user->lastname . '</option>';
+	}
+	echo "</select>";
+	echo "</form></div>";
+}
+
 echo "<div class='notepad-session-list'>";
 echo "<form>";
 echo "<select onchange='window.location.href=this.options[this.selectedIndex].value'>";
@@ -357,6 +380,7 @@ echo "</select>";
 echo "</form>";
 
 echo "</div>";
+
 
 echo "<div id='directions'><h4>$directions</h4></div>";
 
