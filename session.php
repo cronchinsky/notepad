@@ -36,35 +36,16 @@ $newSave = optional_param('newSave', 0, PARAM_INT);
 $ready = optional_param('ready', 0, PARAM_INT);
 $message = '';
 
-if ($user) {
-  $session_user = $user;
-} else {
-  $session_user = $USER->id;
-}
-
-$session_user = ($user ? $user: $USER->id);
-
 // Load the session from the url ID
 $session = $DB->get_record('notepad_sessions', array('id' => $id));
+// Load the notepad activity, course, and cm context from the problem, and up the chain.
+$notepad = $DB->get_record('notepad', array('id' => $session->nid));
+$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id), 'weight');
 
 // If the session is not found, throw an error
 if (!$session) {
   error('That session does not exist!');
 } 
-
-if ($newSave) {
-	$message = '<h3>Your notebook session has been saved.</h3>';
-}
-
-if ($ready) {
-	$message .= '<h3>Your notebook session has been submitted to facilitators.</h3>';
-}
-
-// Load the notepad activity, course, and cm context from the problem, and up the chain.
-$notepad = $DB->get_record('notepad', array('id' => $session->nid));
-$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id), 'weight');
-
-$entry = $DB->get_record("notepad_entries", array("uid" => $USER->id, "notepad" => $notepad->id));
 
 $course = $DB->get_record('course', array('id' => $notepad->course));
 if ($course->id) {
@@ -74,13 +55,36 @@ else {
   error('Could not find the course!');
 }
 
+// Log this page view.
+add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session->name, $cm->id);
 // This is some moodle stuff that seems to be necessary :)
 require_login($course, true, $cm);
 //$context = get_context_instance(CONTEXT_MODULE, $cm->id);
 $context = context_module::instance($cm->id);
 
-// Log this page view.
-add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session->name, $cm->id);
+// don't allow the u parameter to apply to reqular students
+if (!(has_capability('mod/notepad:edit', $context))) {
+  $session_user_id = $USER->id;
+  $session_user_fullname = $USER->firstname . ' ' . $user->lastname;
+} else {
+  $session_user_id = $user;
+  $session_user = $DB->get_record('user', array('id' => $session_user_id));
+  $session_user_fullname = $session_user->firstname . ' ' . $session_user->lastname;
+}
+
+
+
+$entry = $DB->get_record("notepad_entries", array("uid" => $session_user_id, "notepad" => $notepad->id));
+
+if ($newSave) {
+	$message = '<h3>Your notebook session has been saved.</h3>';
+}
+
+if ($ready) {
+	$message .= '<h3>Your notebook session has been submitted to facilitators.</h3>';
+}
+
+
 
 /// Print the page header
 
@@ -123,22 +127,22 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 	$directions = $session->directions;
 	
 	if ($pids) {
-		$prev_probe_responses = $DB->get_records_select('notepad_probe_responses', "uid = $USER->id AND pid IN (" . implode(",",$pids) . ") ");
+		$prev_probe_responses = $DB->get_records_select('notepad_probe_responses', "uid = $session_user_id AND pid IN (" . implode(",",$pids) . ") ");
 	} 
 	
 	if ($aids) {
-		$prev_activity_responses = $DB->get_records_select('notepad_activity_responses', "uid = $USER->id AND aid IN (" . implode(",",$aids) . ") ");
+		$prev_activity_responses = $DB->get_records_select('notepad_activity_responses', "uid = $session_user_id AND aid IN (" . implode(",",$aids) . ") ");
 	} 
 
 	if ($qids) {
-		$prev_question_responses = $DB->get_records_select('notepad_question_responses', "uid = $USER->id AND qid IN (" . implode(",",$qids) . ") ");
+		$prev_question_responses = $DB->get_records_select('notepad_question_responses', "uid = $session_user_id AND qid IN (" . implode(",",$qids) . ") ");
 	} 
 	
 	if ($cids) {
 	  //$cid_string = implode(",",$cids);
 	  //$sql = "SELECT * FROM {notepad_comparison_responses} WHERE uid = ? AND cid IN (?) order by field(weight, ?)";
-	  //$prev_comparison_responses = $DB->get_records_sql($sql, array($USER->id, $cid_string, $cid_string));
-		$prev_comparison_responses = $DB->get_records_select('notepad_comparison_responses', "uid = $USER->id AND cid IN (" . implode(",",$cids) . ")");
+	  //$prev_comparison_responses = $DB->get_records_sql($sql, array($session_user, $cid_string, $cid_string));
+		$prev_comparison_responses = $DB->get_records_select('notepad_comparison_responses', "uid = $session_user_id AND cid IN (" . implode(",",$cids) . ")");
 	} 
 
 
@@ -146,15 +150,15 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
     $maxfiles = 99;             // TODO: add some setting
     $maxbytes = $CFG->maxbytes; // TODO: add some settin
     $definitionoptions = array('trusttext'=>true, 'subdirs'=>false, 'maxfiles'=>$maxfiles, 'maxbytes'=>$maxbytes, 'context'=>$context);
-    if ($session_wysiwyg = $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $USER->id))) {
+    if ($session_wysiwyg = $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $session_user_id))) {
 	  	$session_wysiwyg = file_prepare_standard_editor($session_wysiwyg, 'textfield', $definitionoptions, $context, 'mod_notepad', 'notepad', $session_wysiwyg->id);
       // store the updated value values
       $DB->update_record('notepad_wysiwyg', $session_wysiwyg);
 
       //refetch complete entry
-      $session_wysiwyg = $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $USER->id));
+      $session_wysiwyg = $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $session_user_id));
     } else {
-        $session_wysiwyg->uid = $USER->id;
+        $session_wysiwyg->uid = $session_user_id;
         $session_wysiwyg->sid = $session->id;
         $session_wysiwyg->textfield = '';
         $session_wysiwyg->textfieldtrust = 0;
@@ -173,7 +177,7 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
     $responses->textfieldformat  = FORMAT_HTML; // updated later
     $responses->textfieldtrust   = 0;           // updated later
     $responses->sid	             = $session->id;
-    $responses->uid				 			 = $USER->id;
+    $responses->uid				 			 = $session_user_id;
 
    
     $timenow = time();
@@ -190,7 +194,7 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
         $logaction = "update entry";
         
     } else {
-        $newentry->uid = $USER->id;
+        $newentry->uid = $session_user_id;
         $newentry->notepad = $notepad->id;
         if (!$newentry->id = $DB->insert_record("notepad_entries", $newentry)) {
             print_error("Could not insert a new notepad entry");
@@ -201,19 +205,19 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
   
   
   if ($pids) {
-  	$DB->delete_records_select('notepad_probe_responses',"pid IN (" . implode(",",$pids) . ") AND uid = $USER->id");
+  	$DB->delete_records_select('notepad_probe_responses',"pid IN (" . implode(",",$pids) . ") AND uid = $session_user_id");
   }
   
   if ($aids) {
-  	$DB->delete_records_select('notepad_activity_responses',"aid IN (" . implode(",",$aids) . ") AND uid = $USER->id");
+  	$DB->delete_records_select('notepad_activity_responses',"aid IN (" . implode(",",$aids) . ") AND uid = $session_user_id");
   }
   
   if ($qids) {
-  	$DB->delete_records_select('notepad_question_responses',"qid IN (" . implode(",",$qids) . ") AND uid = $USER->id");
+  	$DB->delete_records_select('notepad_question_responses',"qid IN (" . implode(",",$qids) . ") AND uid = $session_user_id");
   }
   
   if ($cids) {
-  	$DB->delete_records_select('notepad_comparison_responses',"cid IN (" . implode(",",$cids) . ") AND uid = $USER->id");
+  	$DB->delete_records_select('notepad_comparison_responses',"cid IN (" . implode(",",$cids) . ") AND uid = $session_user_id");
   }
  
   $form_items = array();
@@ -249,7 +253,7 @@ add_to_log($course->id, 'notepad', 'view', "session.php?id={$cm->id}", $session-
 		      //notepad_debug($table);
 		      $new_response = new stdClass();
 
-		      $new_response->uid = $USER->id;
+		      $new_response->uid = $session_user_id;
 		      if ($table == 'probe') { 
 		        //notepad_debug($item_id);
 		        //notepad_debug($fields);
@@ -353,7 +357,7 @@ echo $OUTPUT->heading($notepad->name);
 $i = 0;
 $num_sessions = count($sessions);
 */
-echo '<h1>' . $session_user . '</h1>';
+echo '<h1>' . $session_user_fullname . '</h1>';
 if (has_capability('mod/notepad:edit', $context)) {
   $all_users = get_users_by_capability($context, 'mod/notepad:addentries', '', '', '', '', $groups);
 	$users = $all_users;
