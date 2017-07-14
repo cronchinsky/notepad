@@ -2,6 +2,22 @@ body.pagelayout-popup {
     background: none !important;
 }
 
+#directions {
+  clear: right;
+	/* width: 600px; */
+	margin: 20px 0;
+}
+
+#notepad-fullname {
+  float: right;
+}
+
+#notepad-header {
+  float: left;
+  width: 60%;
+}
+
+
 #page-mod-notepad-session #page-header,
 #page-mod-notepad-view #page-header {
 	display: none;
@@ -9,6 +25,7 @@ body.pagelayout-popup {
 
 #page-mod-notepad-session .mform .fitem .fitemtitle {
 	width: 150px;
+	margin-right: 20px;
 }
 
 #page-mod-notepad-session .mform .fitem {
@@ -132,18 +149,20 @@ ul li.session-prompts {
 	background-color: #eeeeee;
 }
 
-#directions {
-	width: 600px;
-	margin: 20px 0;
-}
+
 
 .notepad-session-list,
 .notepad-user-list {
 	float: right;
+	clear: right;
+}
+
+.notepad-session-list ul {
+  white-space: nowrap;
 }
 
 .notepad-session-list ul li {
-	display: inline;
+	display: inline-block;
 }
 
 
@@ -160,7 +179,10 @@ ul li.session-prompts {
 
 span.session-name  {
 	float: left;
-	width: 400px;
+	width: 50%;
+	clear: left;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .notepad-action-links {
@@ -194,6 +216,14 @@ div.notepad-comparison {
 	float: left;
 	padding-top: 4px;
 }
+
+#notepad-comments {
+  border: 1px solid #bbbbbb;
+  background-color: #eeeeee;
+  width: 95%;
+  padding: 0 20px 20px 20px;
+}
+
  
 #page-mod-notepad-session .mform div.notepad-comparison .fitem {
 	margin-top: 1px;
