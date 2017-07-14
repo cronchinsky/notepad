@@ -142,13 +142,12 @@ echo '<div id="toggleall"><a class="alltoggleLink" href="#">Show All</a></div>';
   
 $usersdone = notepad_get_users_done($notepad, $currentgroup);
 
-//usort($usersdone, "cmp");
-
 if ($u) {
      $userentry = (isset($usersdone[$u]) ? $entrybyuser[$u] : NULL);
      notepad_print_user_entry($course, $users[$u], $userentry, $s, $teachers, $grades); 	       
 }  else {
 	if ($usersdone) {
+	  usort($usersdone, "cmp");
     foreach ($usersdone as $user) {
       notepad_print_user_entry($course, $user, $entrybyuser[$user->id], $s, $teachers, $grades);
       unset($users[$user->id]);
@@ -160,7 +159,7 @@ if ($u) {
   }
 
 }
-
+usort($all_users, 'cmp');
 notepad_print_completion($sessions, $all_users);
 /*
 if ($allowedtograde) {

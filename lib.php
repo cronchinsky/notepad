@@ -461,6 +461,14 @@ function notepad_session_status($session, $uid) {
 				$number_responses++;
 			}
 		}
+		if ($session->wysiwyg) {
+  		$number_questions++;
+  		$session_wysiwyg =  $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $uid));
+      if ($session_wysiwyg->textfield != '') {
+  				$number_responses++;
+		  }
+		}
+		
 		$status->complete = round($number_responses / $number_questions * 100, 0) . '%';
     }
     
@@ -599,7 +607,7 @@ function notepad_print($notepad, $sessions,$user)  {
   echo "<div class='notepad-print'>";
   foreach ($sessions as $session) {
         
-    $probes = $DB->get_records('notepad_probes', array('sid' => $session->id));
+  $probes = $DB->get_records('notepad_probes', array('sid' => $session->id));
 	$pids = array_keys($probes);
 	
 	$activities = $DB->get_records('notepad_activities', array('sid' => $session->id));
@@ -611,6 +619,7 @@ function notepad_print($notepad, $sessions,$user)  {
 	$comparisons = $DB->get_records('notepad_comparisons', array('sid' => $session->id));
 	$cids = array_keys($comparisons);
 	
+	//$wysiwyg = $DB->get_record('notepad_sessions', array('id' => $session->id));
 	
 	$prev_probe_responses = array();
 	$prev_activity_responses = array();
@@ -647,9 +656,9 @@ function notepad_print($notepad, $sessions,$user)  {
 	echo "<ol>";
 	
     foreach ($questions as $question) {
+       echo "<li class='question-question'><p>" . $question->question . "</p>";
        foreach ($prev_question_responses as $response) {
-    		if ($response->qid == $question->id)  {
-    			echo "<li><p>" . $question->question . "</p>";
+    		if ($response->qid == $question->id)  {    			
     			echo "<p class='question-response'>" . $response->response . "</p></li>";
     		}
        }
@@ -695,21 +704,23 @@ function notepad_print($notepad, $sessions,$user)  {
     	}
     	echo "</table>";   	
     }
-    echo "</li>";
-    
-  	echo "</ol>";
+
   	
   	if ($session_wysiwyg) {
 	    // get the reflection field for the session
 	    $reflections = file_rewrite_pluginfile_urls($session_wysiwyg->textfield, 'pluginfile.php', $context->id, 'mod_notepad', 'notepad', $session_wysiwyg->id);
 	    // we need to do all this to get Dragmath to work. And it does!
 	    $formatoptions = new stdClass;
-		$formatoptions->noclean = true;
-		$formatoptions->overflowdiv = true;
-		$formatoptions->context = $context;
-		$reflections = format_text($reflections, FORMAT_HTML, $formatoptions);
-	    echo "<div class='reflections'>" . $reflections . "</div>";
+      $formatoptions->noclean = true;
+      $formatoptions->overflowdiv = true;
+      $formatoptions->context = $context;
+      $reflections = format_text($reflections, FORMAT_HTML, $formatoptions);
+      echo "<li class='wysiwyg-prompt'>" . $session->wysiwyg_prompt . "<br />";
+	    echo  $reflections ;
     }
+    
+    echo "</li>";    
+  	echo "</ol>";
     
     if ($prev_comment->comment) {
       echo '<div id="notepad-comments">';
