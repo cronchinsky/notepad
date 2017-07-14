@@ -633,7 +633,9 @@ function notepad_print($notepad, $sessions,$user)  {
 		$prev_comparison_responses = $DB->get_records_select('notepad_comparison_responses', "uid = $user->id AND cid IN (" . implode(",",$cids) . ") ");
 	}
 	
-    $session_wysiwyg =  $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $user->id));
+  $session_wysiwyg =  $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $user->id));
+  
+  $prev_comment = $DB->get_record('notepad_comments', array('sid' => $session->id, 'uid' => $user->id));
 
 	if ($prev_probe_responses or $prev_activity_responses or $prev_question_responses) {
 	 echo '<div class="session"><h3><a class="sessiontoggleLink" href="#">' . $session->name . '</a></h3>';
@@ -707,6 +709,13 @@ function notepad_print($notepad, $sessions,$user)  {
 		$formatoptions->context = $context;
 		$reflections = format_text($reflections, FORMAT_HTML, $formatoptions);
 	    echo "<div class='reflections'>" . $reflections . "</div>";
+    }
+    
+    if ($prev_comment->comment) {
+      echo '<div id="notepad-comments">';
+      echo '<h5>Facilitator Comments</h5>';
+      echo  $prev_comment->comment;
+      echo  '</div>';
     }
   	echo "</div>";
   	echo "</div>";
@@ -845,6 +854,10 @@ function notepad_add_to_form($item, &$mform, $index, $type) {
   
   $mform->addElement('html','</tr>');
   
+  // Disable the field if adding comments is checked.
+  $mform->disabledIf("$type-plans-$item->id", 'notepad-addingcomments', 'checked');
+
+  
 }
 
 function notepad_add_question_to_form($item, &$mform, $index, $type) {
@@ -856,6 +869,9 @@ function notepad_add_question_to_form($item, &$mform, $index, $type) {
   $mform->addElement('textarea', "$type-response-$item->id", '', 'wrap="virtual" rows="3" cols="100"', array('class'=> 'question'));
   
   $mform->addElement('html','</li>');
+  
+  // Disable the field if adding comments is checked.
+  $mform->disabledIf("$type-response-$item->id", 'notepad-addingcomments', 'checked');
   
 }
 
@@ -882,6 +898,10 @@ function notepad_add_comparison_to_form($item, &$mform, $index, $type) {
   $mform->addElement('html',"</div>");
   
   $mform->addElement('html','</li>');
+  
+  // Disable the field if adding comments is checked.
+  $mform->disabledIf("$type-responseb-$item->id", 'notepad-addingcomments', 'checked');
+
   
 }
 

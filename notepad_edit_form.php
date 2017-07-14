@@ -105,7 +105,12 @@ class notepad_edit_form extends moodleform {
 		    $mform->addElement('html',"$session->wysiwyg_prompt");
         $mform->addElement('editor','textfield_editor', '' ,null,array('maxfiles'=> EDITOR_UNLIMITED_FILES, 'maxbytes' => $maxbytes));	
         $mform->addElement('html', '</p>');
-        $mform->addElement('html','</div></li>');	  
+        $mform->addElement('html','</div></li>');	
+        
+        // Disable the field if adding comments is checked.
+        // This should work, but it is a bug: https://tracker.moodle.org/browse/MDL-29701
+        $mform->disabledIf("textfield_editor", 'notepad-addingcomments', 'checked');
+  
       }
 	
 			$mform->addElement('html','</ul>'); 
@@ -114,9 +119,19 @@ class notepad_edit_form extends moodleform {
         
       if ($questions) {         
       	$mform->addElement('checkbox', 'question-submit_session','Ready for facilitators');
+      	$mform->disabledIf("question-submit_session", 'notepad-addingcomments', 'checked');
       }
        
       $this->add_action_buttons(false, "Save");
+      
+      // only put the comments field for admins/teachers/facilitators
+      if (has_capability('mod/notepad:edit', $context)) {
+        $mform->addElement('html','<div id="notepad-comment">');
+        $mform->addElement('textarea', "comments", get_string('comments', 'notepad'), 'wrap="virtual" rows="3" cols="100"', array('class'=> 'notepad-commments'));
+        $mform->addElement('html','</div>');	
+        $mform->addElement('checkbox', 'notepad-addingcomments','Adding comments');
+        $mform->setDefault('notepad-addingcomments', true);
+      }
           /* $buttonarray=array();
 		  $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
 		  $buttonarray[] = &$mform->createElement('reset', 'resetbutton', get_string('revert'));
