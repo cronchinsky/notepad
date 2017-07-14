@@ -30,7 +30,7 @@
 
 defined('MOODLE_INTERNAL') || die();
  
-$plugin->version   = 2016080703;
+$plugin->version   = 2017070801;
 $plugin->requires  = 2015111600;
 $plugin->cron			 = 0;
 $plugin->component = 'mod_notepad';
