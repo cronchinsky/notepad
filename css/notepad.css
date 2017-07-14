@@ -217,11 +217,23 @@ div.notepad-comparison {
 	padding-top: 4px;
 }
 
+.question-response {
+	background: #FCFCD7;
+	padding: 10px 20px;
+}
+
+.wysiwyg-prompt .no-overflow {
+	background: #FCFCD7;
+	padding: 10px 20px;
+	margin-top: 5px;
+}
+
 #notepad-comments {
   border: 1px solid #bbbbbb;
   background-color: #eeeeee;
   width: 95%;
   padding: 0 20px 20px 20px;
+  margin-top: 30px;
 }
 
  
@@ -312,10 +324,6 @@ table.print td.plans {
 	color:
 }
 
-#page-mod-notepad-report .question-response {
-	background: #F6F6F6;
-	padding: 5px;
-}
 
 #page-mod-notepad-report table.notepad-status {
 	border-collapse: collapse; 
