@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/notes/db" VERSION="20160130" COMMENT="XMLDB file for Moodle mod/notes.  Create for DPD project"
+<XMLDB PATH="mod/notes/db" VERSION="20170708" COMMENT="XMLDB file for Moodle mod/notes.  Create for DPD project"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -154,6 +154,17 @@
         <FIELD NAME="uid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="response_a" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="response_b" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="notepad_comments" COMMENT="Facilitator/Teacher comments.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Session id"/>
+        <FIELD NAME="uid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="user id"/>
+        <FIELD NAME="comment" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the comment"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
