@@ -272,5 +272,26 @@ function xmldb_notepad_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016080702, 'notepad');
     }
 
+    if ($oldversion < 2017070801) {
+
+        // Define field id to be added to notepad_comments.
+        $table = new xmldb_table('notepad_comments');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $table->add_field('sid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'id');
+        $table->add_field('uid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'sid');
+        $table->add_field('comment', XMLDB_TYPE_TEXT, null, null, null, null, null, 'uid');
+        
+        // Adding keys to table notepad_comparison_responses.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for notepad_comments.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Notes savepoint reached.
+        upgrade_mod_savepoint(true, 2017070801, 'notepad');
+    }
+
   return true;
 }
