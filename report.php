@@ -90,6 +90,7 @@ if ($currentgroup) {
 
 $all_users = get_users_by_capability($context, 'mod/notepad:addentries', '', '', '', '', $groups);
 $users = $all_users;
+usort($all_users, 'cmp');
 
 if (!$users) {
   echo $OUTPUT->heading(get_string("nousersyet"));
@@ -111,13 +112,13 @@ if ($allowedtograde) {
   }	    
 */
 
-//usort($users, "cmp");
+
 echo "<div class='notepad-user-list'>";
 echo "<form>";
 echo "<select onchange='window.location.href=this.options[this.selectedIndex].value'>";
 
 echo "<option value=''>Show user..</option>";
-foreach ($users as $user_id => $user) {
+foreach ($all_users as $user_id => $user) {
 	echo '<option value="'. $CFG->wwwroot . '/mod/notepad/report.php?n=' . $notepad->id . '&amp;u=' . $user->id . '">' . $user->firstname . ' ' . $user->lastname . '</option>';
 }
 echo '<option value="'. $CFG->wwwroot . '/mod/notepad/report.php?n=' . $notepad->id  . '">All users</option>';
@@ -159,7 +160,7 @@ if ($u) {
   }
 
 }
-usort($all_users, 'cmp');
+
 notepad_print_completion($sessions, $all_users);
 /*
 if ($allowedtograde) {
