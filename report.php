@@ -180,7 +180,7 @@ echo $OUTPUT->footer();
     
 /************ HELPER FUNCTIONS *****************/
 function cmp($a, $b) {
-    return strcasecmp($a->lastname, $b->lastname);
+    return strcasecmp($a->firstname, $b->firstname);
 }
 
 
