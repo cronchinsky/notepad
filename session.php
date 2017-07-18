@@ -191,6 +191,8 @@ if ($responses = $mform->get_data()) {
   // LOTS and LOTS of custom processing
   if (has_capability('mod/notepad:edit', $context)) {
     $writing_comments = $responses->notepad_addingcomments;
+  } else {
+    $writing_comments = false;
   }
   
   if (!$writing_comments) {
@@ -431,10 +433,10 @@ if ($message) {
 $mform->display();
 
 // facilitator comments for teachers/admins/facilitators
-if (!has_capability('mod/notepad:edit', $context) && ($prev_comment->comment)) {
+if (!has_capability('mod/notepad:edit', $context) && ($session_comment->comment)) {
     echo '<div id="notepad-comments">';
     echo '<h5>Facilitator Comments</h5>';
-    echo  $prev_comment->comment;
+    echo  $session_comment->comment;
     echo  '</div>';
 }
 
@@ -445,6 +447,6 @@ echo $OUTPUT->footer();
 
 /************ HELPER FUNCTIONS *****************/
  function cmp($a, $b) {
-    return strcasecmp($a->lastname, $b->lastname);
+    return strcasecmp($a->firstname, $b->firstname);
 }
 
