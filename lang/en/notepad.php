@@ -44,3 +44,4 @@ $string['session_prompts'] = 'Session Prompts';
 $string['gradeingradebook'] = 'Grade in gradebook';
 $string['directions'] = 'Directions';
 $string['comments'] = 'Facilitator Comments';
+$string['comments_checkbox'] = 'Editing of notebook responses disabled';

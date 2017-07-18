@@ -129,7 +129,7 @@ class notepad_edit_form extends moodleform {
         $mform->addElement('html','<div id="notepad-comment">');
         $mform->addElement('textarea', "comments", get_string('comments', 'notepad'), 'wrap="virtual" rows="3" cols="100"', array('class'=> 'notepad-commments'));
         $mform->addElement('html','</div>');	
-        $mform->addElement('checkbox', 'notepad_addingcomments','Adding comments');
+        $mform->addElement('checkbox', 'notepad_addingcomments',get_string('comments_checkbox', 'notepad'));
         $mform->setDefault('notepad_addingcomments', true);
       }
           /* $buttonarray=array();
