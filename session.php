@@ -150,7 +150,12 @@ if ($cids) {
 	$prev_comparison_responses = $DB->get_records_select('notepad_comparison_responses', "uid = $session_user_id AND cid IN (" . implode(",",$cids) . ")");
 } 
 
-$prev_comment = $DB->get_record('notepad_comments', array('sid' => $id, 'uid' => $session_user_id));
+if (!$session_comment = $DB->get_record('notepad_comments', array('sid' => $id, 'uid' => $session_user_id))) {
+  $session_comment->uid = $session_user_id;
+  $session_comment->sid = $session->id;
+  $session_comment->id = $DB->insert_record('notepad_comments', $session_comment);
+}
+
 //notepad_debug($prev_comment);
 //break;
 if ($session->wysiwyg) {
@@ -181,86 +186,92 @@ $mform = new notepad_edit_form("/mod/notepad/session.php?id={$session->id}&u={$s
 
 if ($responses = $mform->get_data()) {
   // YES -- the form was submitted
-  
+  //notepad_debug($responses);
+  //break;
   // LOTS and LOTS of custom processing
-  if (empty($responses->id) && ($session->wysiwyg)) {
-      $responses->id           = $session_wysiwyg->id;
+  if (has_capability('mod/notepad:edit', $context)) {
+    $writing_comments = $responses->notepad_addingcomments;
   }
-  $responses->textfield        = '';          // updated later
-  $responses->textfieldformat  = FORMAT_HTML; // updated later
-  $responses->textfieldtrust   = 0;           // updated later
-  $responses->sid	             = $session->id;
-  $responses->uid				 			 = $session_user_id;
+  
+  if (!$writing_comments) {
+    if (empty($responses->id) && ($session->wysiwyg)) {
+      $responses->id           = $session_wysiwyg->id;
+    }
+    $responses->textfield        = '';          // updated later
+    $responses->textfieldformat  = FORMAT_HTML; // updated later
+    $responses->textfieldtrust   = 0;           // updated later
+    $responses->sid	             = $session->id;
+    $responses->uid				 			 = $session_user_id;
 
-  $timenow = time();
+    $timenow = time();
 
-  $newentry = new stdClass();
+    $newentry = new stdClass();
 
-  $newentry->modified = $timenow;
+    $newentry->modified = $timenow;
 
-  // figure out if this is a new entry
-  if ($entry) {
+    // figure out if this is a new entry
+    if ($entry) {
       $newentry->id = $entry->id;
       if (!$DB->update_record("notepad_entries", $newentry)) {
           print_error("Could not update your notepad");
       }
       $logaction = "update entry";
-      
-  } else {
-      $newentry->uid = $session_user_id;
-      $newentry->notepad = $notepad->id;
-      if (!$newentry->id = $DB->insert_record("notepad_entries", $newentry)) {
+        
+      } else {
+        $newentry->uid = $session_user_id;
+        $newentry->notepad = $notepad->id;
+        if (!$newentry->id = $DB->insert_record("notepad_entries", $newentry)) {
           print_error("Could not insert a new notepad entry");
-      }
-      $logaction = "add entry";
-  } 
- 
-  // delete any existing data
-  if ($pids) {
-	  $DB->delete_records_select('notepad_probe_responses',"pid IN (" . implode(",",$pids) . ") AND uid = $session_user_id");
-  }
-
-  if ($aids) {
-	  $DB->delete_records_select('notepad_activity_responses',"aid IN (" . implode(",",$aids) . ") AND uid = $session_user_id");
-  }
-
-  if ($qids) {
-	  $DB->delete_records_select('notepad_question_responses',"qid IN (" . implode(",",$qids) . ") AND uid = $session_user_id");
-  }
-
-  if ($cids) {
-	  $DB->delete_records_select('notepad_comparison_responses',"cid IN (" . implode(",",$cids) . ") AND uid = $session_user_id");
-  }
-
-  $form_items = array();
-  $form_question = array(); 
-
-  //notepad_debug($responses);
-  //break;
-  
-  // parse and write data to database
-  foreach ($responses as $key => $response) {
-     
-    $exploded_key = explode("-",$key);
-  
-    $keysize = sizeof($exploded_key);  
-    //notepad_debug($key);
-    //notepad_debug($keysize);  
-    //break;
-    if ($keysize == 3) { 
-  	  list($table, $field, $item_id) = $exploded_key; 		
-      $form_items[$table][$item_id][$field] = $response;   	
-    }  else if ($keysize == 2) {
-  		list($table, $field) = $exploded_key;
-  		$form_question[$field] = $response;
+        }
+        $logaction = "add entry";
     } 
-  }
+ 
+    // delete any existing data
+    if ($pids) {
+	    $DB->delete_records_select('notepad_probe_responses',"pid IN (" . implode(",",$pids) . ") AND uid = $session_user_id");
+    }
+
+    if ($aids) {
+	    $DB->delete_records_select('notepad_activity_responses',"aid IN (" . implode(",",$aids) . ") AND uid = $session_user_id");
+    }
+
+    if ($qids) {
+	    $DB->delete_records_select('notepad_question_responses',"qid IN (" . implode(",",$qids) . ") AND uid = $session_user_id");
+    }
+
+    if ($cids) {
+	    $DB->delete_records_select('notepad_comparison_responses',"cid IN (" . implode(",",$cids) . ") AND uid = $session_user_id");
+    }
+
+    $form_items = array();
+    $form_question = array(); 
+
+    //notepad_debug($responses);
+    //break;
+  
+    // parse and write data to database
+    foreach ($responses as $key => $response) {
      
-  //notepad_debug($responses);
-  //notepad_debug($form_items);
-  //break;
-  $ready = '&ready=0';
-  foreach ($form_items as $table => $item_ids) {
+      $exploded_key = explode("-",$key);
+  
+      $keysize = sizeof($exploded_key);  
+      //notepad_debug($key);
+      //notepad_debug($keysize);  
+      //break;
+      if ($keysize == 3) { 
+  	    list($table, $field, $item_id) = $exploded_key; 		
+        $form_items[$table][$item_id][$field] = $response;   	
+      }  else if ($keysize == 2) {
+  		  list($table, $field) = $exploded_key;
+        $form_question[$field] = $response;
+      } 
+    }
+     
+    //notepad_debug($responses);
+    //notepad_debug($form_items);
+    //break;
+    $ready = '&ready=0';
+    foreach ($form_items as $table => $item_ids) {
 	    foreach ($item_ids as $item_id => $fields) {
         //notepad_debug($table);
         $new_response = new stdClass();
@@ -283,38 +294,42 @@ if ($responses = $mform->get_data()) {
 	    	  $new_response->qid = $item_id;
           $new_response->response = $fields['response'];
 	   
-        if (array_key_exists("submit_session", $form_question)) {
-		      $new_response->submit_session = $form_question['submit_session'];      	
+          if (array_key_exists("submit_session", $form_question)) {
+		        $new_response->submit_session = $form_question['submit_session'];      	
 
-          // check if they had previously submitted the session to facilitors
-          $key_arr = array_keys($prev_question_responses);
-          $prev_question_responses_id = array_shift($key_arr);
-          $ready_response = $prev_question_responses[$prev_question_responses_id]->submit_session;
+            // check if they had previously submitted the session to facilitors
+            $key_arr = array_keys($prev_question_responses);
+            $prev_question_responses_id = array_shift($key_arr);
+            $ready_response = $prev_question_responses[$prev_question_responses_id]->submit_session;
 
-          if (!$ready_response) {
-			      // send a message on reload
-            $ready = '&ready=1';
-			    }
-				}
-      } 
-      //notepad_debug($new_response);
-      //notepad_debug($table);
-      $DB->insert_record('notepad_' . $table . '_responses',$new_response);
-  	}  
-  }
+            if (!$ready_response) {
+			        // send a message on reload
+              $ready = '&ready=1';
+            }
+          }
+        } 
+        //notepad_debug($new_response);
+        //notepad_debug($table);
+        $DB->insert_record('notepad_' . $table . '_responses',$new_response);
+      }  
+    }
 
-  if ($session->wysiwyg) {
-    // save and relink embedded images and save attachments
-    $wysiwyg_responses = file_postupdate_standard_editor($responses, 'textfield', $definitionoptions, $context, 'mod_notepad', 'notepad', $responses->id);
-    // store the updated value values
-    $DB->update_record('notepad_wysiwyg', $wysiwyg_responses);
+    if ($session->wysiwyg) {
+      // save and relink embedded images and save attachments
+      $wysiwyg_responses = file_postupdate_standard_editor($responses, 'textfield', $definitionoptions, $context, 'mod_notepad', 'notepad', $responses->id);
+      // store the updated value values
+      $DB->update_record('notepad_wysiwyg', $wysiwyg_responses);
+    }
   }
   
-  $new_response = new stdClass();
-  $new_response->uid = $session_user_id;
-  $new_response->sid = $id;
-  $new_response->comment = $responses->comments;
-  $DB->insert_record('notepad_comments',$new_response);
+  if (isset($responses->comments)) {
+    $new_response = new stdClass();
+    $new_response->uid = $session_user_id;
+    $new_response->sid = $id;
+    $new_response->comment = $responses->comments;
+    $new_response->id = $session_comment->id;
+    $DB->update_record('notepad_comments',$new_response);
+  }
   
   // go and reload the page to set the new data.
   redirect("session.php?id=$id&u=$session_user_id&newSave=1$ready");
@@ -359,7 +374,7 @@ if ($session->wysiwyg) {
 
 // facilitator comments
 if (has_capability('mod/notepad:edit', $context)) {
-  $form_data['comments'] = $prev_comment->comment;
+  $form_data['comments'] = $session_comment->comment;
 } 
 
 //notepad_debug($form_data);

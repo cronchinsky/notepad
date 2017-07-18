@@ -866,7 +866,7 @@ function notepad_add_to_form($item, &$mform, $index, $type) {
   $mform->addElement('html','</tr>');
   
   // Disable the field if adding comments is checked.
-  $mform->disabledIf("$type-plans-$item->id", 'notepad-addingcomments', 'checked');
+  $mform->disabledIf("$type-plans-$item->id", 'notepad_addingcomments', 'checked');
 
   
 }
@@ -882,7 +882,7 @@ function notepad_add_question_to_form($item, &$mform, $index, $type) {
   $mform->addElement('html','</li>');
   
   // Disable the field if adding comments is checked.
-  $mform->disabledIf("$type-response-$item->id", 'notepad-addingcomments', 'checked');
+  $mform->disabledIf("$type-response-$item->id", 'notepad_addingcomments', 'checked');
   
 }
 

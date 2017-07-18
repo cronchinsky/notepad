@@ -109,7 +109,7 @@ class notepad_edit_form extends moodleform {
         
         // Disable the field if adding comments is checked.
         // This should work, but it is a bug: https://tracker.moodle.org/browse/MDL-29701
-        $mform->disabledIf("textfield_editor", 'notepad-addingcomments', 'checked');
+        $mform->disabledIf("textfield_editor", 'notepad_addingcomments', 'checked');
   
       }
 	
@@ -119,7 +119,7 @@ class notepad_edit_form extends moodleform {
         
       if ($questions) {         
       	$mform->addElement('checkbox', 'question-submit_session','Ready for facilitators');
-      	$mform->disabledIf("question-submit_session", 'notepad-addingcomments', 'checked');
+      	$mform->disabledIf("question-submit_session", 'notepad_addingcomments', 'checked');
       }
        
       $this->add_action_buttons(false, "Save");
@@ -129,8 +129,8 @@ class notepad_edit_form extends moodleform {
         $mform->addElement('html','<div id="notepad-comment">');
         $mform->addElement('textarea', "comments", get_string('comments', 'notepad'), 'wrap="virtual" rows="3" cols="100"', array('class'=> 'notepad-commments'));
         $mform->addElement('html','</div>');	
-        $mform->addElement('checkbox', 'notepad-addingcomments','Adding comments');
-        $mform->setDefault('notepad-addingcomments', true);
+        $mform->addElement('checkbox', 'notepad_addingcomments','Adding comments');
+        $mform->setDefault('notepad_addingcomments', true);
       }
           /* $buttonarray=array();
 		  $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
