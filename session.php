@@ -387,8 +387,6 @@ $mform->set_data($form_data);
 /********** OUTPUT ***********/
   
 echo $OUTPUT->header();
-echo $OUTPUT->navbar();
-
 echo '<div id="notepad-header">' . $OUTPUT->heading($notepad->name) . '</div>';
 
 echo '<div id="notepad-fullname">' . '<h3>' . $session_user_fullname . '</h3></div>';
