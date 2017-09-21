@@ -20,7 +20,7 @@ body.pagelayout-popup {
 
 #page-mod-notepad-session #page-header,
 #page-mod-notepad-view #page-header {
-	display: none;
+	/* display: none; */
 }
 
 #page-mod-notepad-session .mform .fitem .fitemtitle {
