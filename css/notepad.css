@@ -149,10 +149,13 @@ ul li.session-prompts {
 	background-color: #eeeeee;
 }
 
-
+#region-main h2 {
+	float: left;
+}
 
 .notepad-session-list,
-.notepad-user-list {
+.notepad-user-list,
+#notepad-download {
 	float: right;
 	clear: right;
 }
@@ -302,6 +305,7 @@ table.print td.plans {
 /* grade report */
 #page-mod-notepad-report table {
 	border-collapse: separate;
+	clear: right;
 }
 
 #page-mod-notepad-report .grade-info {
@@ -314,6 +318,7 @@ table.print td.plans {
 #page-mod-notepad-report #toggleall {
 	/* text-align: right; */
 	padding: 0 20px 10px 0;
+	clear: both
 }
 
 #page-mod-notepad-report .session h3 {

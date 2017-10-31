@@ -6,10 +6,11 @@ require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/notepad/locallib.php');
 //require_once($CFG->dirroot.'/mod/notepad/report/reportlib.php');
 
-$id = optional_param('id',0,PARAM_INT);    // Course Module ID, or
-$n = optional_param('n',0,PARAM_INT);     // notepad ID
-$s = optional_param('s',0,PARAM_INT);     // session ID
-$u = optional_param('u',0,PARAM_INT);     // user ID
+$id = optional_param('id',NULL,PARAM_INT);    // Course Module ID, or
+$n = optional_param('n',NULL,PARAM_INT);     // notepad ID
+$s = optional_param('s',NULL,PARAM_INT);     // session ID
+$u = optional_param('u',NULL,PARAM_INT);     // user ID
+$output  = optional_param('output', '', PARAM_RAW);
 
 $mode = optional_param('mode', '', PARAM_ALPHA);        // Report mode
 
@@ -54,8 +55,6 @@ $PAGE->requires->js('/mod/notepad/scripts/notepad.js');
 
 add_to_log($course->id, "notepad", "report", "report.php?id=$cm->id", "$notepad->id", "$cm->id");
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading('notepad grade report');	
 // make some easy ways to access the entries.
 if ( $notepad_entries = $DB->get_records("notepad_entries", array("notepad" => $notepad->id))) {	    
   foreach ($notepad_entries as $entry) {
@@ -72,25 +71,63 @@ if ( $notepad_entries = $DB->get_records("notepad_entries", array("notepad" => $
 $sort = 'weight';
 $sessions = $DB->get_records("notepad_sessions", array("nid" => $notepad->id), $sort);
 
+
+
 // Group mode
 $groupmode = groups_get_activity_groupmode($cm);
 $currentgroup = groups_get_activity_group($cm, true);
-
-
-add_to_log($course->id, "notepad", "view responses", "report.php?id=$cm->id", "$notepad->id", $cm->id);
-
-/// Print out the notepad entries
-
 
 if ($currentgroup) {
   $groups = $currentgroup;
 } else {
   $groups = '';
 }
+add_to_log($course->id, "notepad", "view responses", "report.php?id=$cm->id", "$notepad->id", $cm->id);
 
 $all_users = get_users_by_capability($context, 'mod/notepad:addentries', '', '', '', '', $groups);
 $users = $all_users;
 usort($all_users, 'cmp');
+
+// messy, but here is some code to 
+if ($output == 'download') {
+	require_once($CFG->dirroot.'/lib/excellib.class.php');
+	$downloadfilename = clean_filename("testing.xls");
+	$workbook = new MoodleExcelWorkbook("-");
+	$workbook->send($downloadfilename);
+	@$myxls =& $workbook->add_worksheet($strreports);
+
+	$myxls->write_string(0,0,'Course Name'); 
+	$myxls->write_string(0,1,'Last Name');
+	$myxls->write_string(0,2,'First Name');
+	$usersdone = notepad_get_users_done($notepad, $currentgroup);
+	$count = 1;
+	if ($u) {
+     $userentry = (isset($usersdone[$u]) ? $entrybyuser[$u] : NULL);
+     notepad_print_user_entry($course, $users[$u], $userentry, $s, $teachers, $grades, $myxls, $count); 	       
+	 }  else {
+		 if ($usersdone) {
+			 usort($usersdone, "cmp");
+			 foreach ($usersdone as $user) {
+				 notepad_print_user_entry($course, $user, $entrybyuser[$user->id], $s, $teachers, $grades, $myxls, $count);
+				 $count++;
+				 unset($users[$user->id]);
+			}
+		}
+		foreach ($users as $user) {       // Remaining users
+			notepad_print_user_entry($course, $user, NULL, $s, $teachers, $grades, $myxls, $count);
+		}
+
+	}   
+	$workbook->close();
+	exit;
+}
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading('notepad grade report');	
+/// Print out the notepad entries
+
+
+
 
 if (!$users) {
   echo $OUTPUT->heading(get_string("nousersyet"));
@@ -112,7 +149,7 @@ if ($allowedtograde) {
   }	    
 */
 
-
+echo "<div id=notepad-report-nav>";
 echo "<div class='notepad-user-list'>";
 echo "<form>";
 echo "<select onchange='window.location.href=this.options[this.selectedIndex].value'>";
@@ -138,25 +175,30 @@ echo "</select>";
 echo "</form>";
 
 echo "</div>";
+echo '<div id="notepad-download"><a class="download-link" href="/mod/notepad/report.php?n=' .$notepad->id . '&amp;s=' . $s . '&amp;u=' . $u . '&amp;output=download">Download XLS</a></div>';
+
+echo "</div>";
   
-echo '<div id="toggleall"><a class="alltoggleLink" href="#">Show All</a></div>';
+echo '<div id="toggleall"><a class="alltoggleLink" href="#">Show Responses</a></div>';
+ 
+
   
 $usersdone = notepad_get_users_done($notepad, $currentgroup);
 
 if ($u) {
      $userentry = (isset($usersdone[$u]) ? $entrybyuser[$u] : NULL);
-     notepad_print_user_entry($course, $users[$u], $userentry, $s, $teachers, $grades); 	       
+     notepad_print_user_entry($course, $users[$u], $userentry, $s, $teachers, $grades, NULL, NULL); 	       
 }  else {
 	if ($usersdone) {
 	  usort($usersdone, "cmp");
     foreach ($usersdone as $user) {
-      notepad_print_user_entry($course, $user, $entrybyuser[$user->id], $s, $teachers, $grades);
+      notepad_print_user_entry($course, $user, $entrybyuser[$user->id], $s, $teachers, $grades, NULL, NULL);
       unset($users[$user->id]);
       //echo 'unsetting user:' . $user->id . '</br>';
 	 }
   }
   foreach ($users as $user) {       // Remaining users
-		notepad_print_user_entry($course, $user, NULL, $s, $teachers, $grades);
+		notepad_print_user_entry($course, $user, NULL, $s, $teachers, $grades, NULL, NULL);
   }
 
 }
