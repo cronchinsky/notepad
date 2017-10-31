@@ -91,7 +91,8 @@ usort($all_users, 'cmp');
 // messy, but here is some code to 
 if ($output == 'download') {
 	require_once($CFG->dirroot.'/lib/excellib.class.php');
-	$downloadfilename = clean_filename("testing.xls");
+	$filename = preg_replace("/[^a-zA-Z]+/", "_", $course->shortname) . '_notebook.xls';
+	$downloadfilename = clean_filename($filename);
 	$workbook = new MoodleExcelWorkbook("-");
 	$workbook->send($downloadfilename);
 	@$myxls =& $workbook->add_worksheet($strreports);
