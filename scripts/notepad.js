@@ -31,13 +31,13 @@ $(function($) {
 	$('a.alltoggleLink').click(function() {
 		
 		// change the link text depending on whether the element is shown or hidden
-		if ($(this).text()=='Show All') {
-				$(this).text('Hide All');
+		if ($(this).text()=='Show Responses') {
+				$(this).text('Hide Responses');
 				// show everything display
 				$('.toggle').show('fast');
 			}
 			else {
-				$(this).text('Show All');
+				$(this).text('Show Responses');
 				// hide everything 
 				$('.toggle').hide('fast');
 			}
