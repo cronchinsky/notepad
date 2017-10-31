@@ -439,6 +439,17 @@ function notepad_print_completion_user($sessions, $user) {
 	echo '</table>';
 }
 
+/* output the ready and complete state to the xls spreadsheet */
+function notepad_print_completion_user_xls($session, $user, $myxls, $count, &$i) {
+	$session_name = explode(":", $session->name, 2);
+	$myxls->write_string(0,$i,$session_name[0] . ' ready');
+	$status = notepad_session_status($session, $user->id);
+	$myxls->write_string($count,$i++,$status->ready);
+	$myxls->write_string(0,$i,$session_name[0] . ' complete');
+	$myxls->write_string($count,$i++,$status->complete);
+}
+
+
 function notepad_session_status($session, $uid) {
 	global  $DB;
 
@@ -475,14 +486,37 @@ function notepad_session_status($session, $uid) {
     return $status;
 }
 
-function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $grades) {
+function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $grades, $myxls, $count) {
     
     global $USER, $OUTPUT, $DB, $CFG;
     
     require_once($CFG->dirroot.'/lib/gradelib.php');
     if ($entry) {
-	        }
-
+	}
+	$sort = 'weight';
+	
+	// different processing if this is an xls download
+	// set up and generate the xls
+	if ($myxls) {
+		if ($entry) {
+	    	$myxls->write_string($count, 0, $course->shortname);
+	    	$myxls->write_string($count, 1, $user->lastname);	
+	    	$myxls->write_string($count, 2, $user->firstname);
+			$notepad  = $DB->get_record('notepad', array('id' => $entry->notepad), '*', MUST_EXIST);
+        
+			if ($session) {
+				$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id, 'id' => $session), $sort);
+			} else {
+				$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id), $sort);
+			}
+			notepad_print_xls($notepad, $sessions, $user, $myxls, $count);
+	    
+		}		
+		return; 
+	}
+	
+	
+	
     echo "\n<table border=\"1\" cellspacing=\"0\" valign=\"top\" cellpadding=\"10\">";
         
     echo "\n<tr>";
@@ -495,7 +529,6 @@ function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $
     }
     echo "</a></h3>";
     
-    $sort = 'weight';
     if ($entry) {
         $notepad  = $DB->get_record('notepad', array('id' => $entry->notepad), '*', MUST_EXIST);
 		if ($session) {
@@ -503,7 +536,6 @@ function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $
 		} else {
 			$sessions = $DB->get_records('notepad_sessions', array('nid' => $notepad->id), $sort);
 	    }
-
 	    
     }
     echo "</td>";
@@ -738,6 +770,92 @@ function notepad_print($notepad, $sessions,$user)  {
 
 }
 
+/* xls print. Right now only the questions and comparisons are outputted the the xls doc */
+function notepad_print_xls($notepad, $sessions, $user, $myxls, $count)  {
+  //print_object($user);
+  global  $DB, $CFG;
+  //require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+  //require_once(dirname(__FILE__).'/lib.php');
+  
+  if (true) { // Conditions to show the intro can change to look for own settings or whatever
+    $course = $DB->get_record('course', array('id' => $notepad->course));
+    if ($course->id) {
+	    $cm = get_coursemodule_from_instance('notepad', $notepad->id, $course->id, false, MUST_EXIST);
+	    //$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+	    $context = context_module::instance($cm->id);
+	    }
+	else {
+		error('Could not find the course!');
+	}
+  }
+  $i = 3;
+  foreach ($sessions as $session) {
+	
+  	notepad_print_completion_user_xls($session, $user, $myxls, $count, $i);
+  	$probes = $DB->get_records('notepad_probes', array('sid' => $session->id));
+	$pids = array_keys($probes);
+	
+	$activities = $DB->get_records('notepad_activities', array('sid' => $session->id));
+	$aids = array_keys($activities);
+			
+	$questions = $DB->get_records('notepad_questions', array('sid' => $session->id));
+	$qids = array_keys($questions);
+	
+	$comparisons = $DB->get_records('notepad_comparisons', array('sid' => $session->id));
+	$cids = array_keys($comparisons);
+	
+	//$wysiwyg = $DB->get_record('notepad_sessions', array('id' => $session->id));
+	
+	$prev_probe_responses = array();
+	$prev_activity_responses = array();
+	$prev_question_responses = array();
+	$prev_comparison_responses = array();
+	
+	
+	if ($qids)  {
+		$prev_question_responses = $DB->get_records_select('notepad_question_responses', "uid = $user->id AND qid IN (" . implode(",",$qids) . ") ");
+	}
+	
+	if ($cids)  {
+		$prev_comparison_responses = $DB->get_records_select('notepad_comparison_responses', "uid = $user->id AND cid IN (" . implode(",",$cids) . ") ");
+	}
+	
+  $session_wysiwyg =  $DB->get_record('notepad_wysiwyg', array('sid' => $session->id, 'uid' => $user->id));
+  
+  $prev_comment = $DB->get_record('notepad_comments', array('sid' => $session->id, 'uid' => $user->id));
+
+    $q = 1;
+    foreach ($questions as $question) {
+       foreach ($prev_question_responses as $response) {
+    		if ($response->qid == $question->id)  {  
+    			$myxls->write_string($count,$i,$response->response);  			
+    		}
+       }
+       $myxls->write_string(0,$i,'Question ' . $q); 
+       $i++;
+       $q++;
+    }
+    
+    $q = 1;	
+	 foreach ($comparisons as $comparison) {
+       foreach ($prev_comparison_responses as $response) {
+    		if ($response->cid == $comparison->id)  {
+    			$myxls->write_string($count,$i,$response->response);  
+    			$i++;	
+    			$myxls->write_string($count,$i,$response->response);  
+    			$i++;	
+    		}
+       }
+    }
+    
+    $myxls->write_string(0,$i, 'Facilitator Comments');
+    if ($prev_comment->comment) {    	
+    	$myxls->write_string($count,$i, $prev_comment->comment);  			
+	}
+	$i++;
+  }	
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // File API                                                                   //
 ////////////////////////////////////////////////////////////////////////////////
@@ -885,6 +1003,23 @@ function notepad_add_question_to_form($item, &$mform, $index, $type) {
   $mform->disabledIf("$type-response-$item->id", 'notepad_addingcomments', 'checked');
   
 }
+
+function notepad_add_question_to_form_teacher($item, &$mform, $index, $type) {
+  
+  $mform->addElement('html',"<li>");
+  
+  $mform->addElement('html',"$item->question");
+
+  $mform->addElement('textarea', "$type-response-$item->id", '', 'wrap="virtual" rows="12" cols="100"', array('class'=> 'question'));
+  
+  $mform->addElement('html','</li>');
+  
+  // Disable the field if adding comments is checked.
+  $mform->disabledIf("$type-response-$item->id", 'notepad_addingcomments', 'checked');
+  
+}
+
+
 
 function notepad_add_comparison_to_form($item, &$mform, $index, $type) {
   
