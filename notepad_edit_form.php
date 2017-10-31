@@ -46,8 +46,12 @@ class notepad_edit_form extends moodleform {
 	      foreach ($items as $type => $item) {
 	        foreach ($item as $key => $value) {
 			      if ($type == 'question') {
-				      notepad_add_question_to_form($value,$mform, $q_index, 'question');
-							$q_index++;	
+			      	  if (has_capability('mod/notepad:edit', $context)) {
+				      	  notepad_add_question_to_form_teacher($value,$mform, $q_index, 'question');
+			      	  } else {
+				      	notepad_add_question_to_form($value,$mform, $q_index, 'question');
+				      }
+					  $q_index++;	
 			      }
 			      if ($type == 'comparison') {
 				      notepad_add_comparison_to_form($value,$mform, $c_index, 'comparison');
