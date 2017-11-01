@@ -833,7 +833,8 @@ function notepad_print_xls($notepad, $sessions, $user, $myxls, $count)  {
     			$myxls->write_string($count,$i,$response->response);  			
     		}
        }
-       $myxls->write_string(0,$i,'Question ' . $q); 
+       $session_name = explode(":", $session->name, 2);
+       $myxls->write_string(0,$i,$session_name[0] . ' Q' . $q); 
        $i++;
        $q++;
     }
@@ -850,7 +851,7 @@ function notepad_print_xls($notepad, $sessions, $user, $myxls, $count)  {
        }
     }
     
-    $myxls->write_string(0,$i, 'Facilitator Comments');
+    $myxls->write_string(0,$i, $session_name[0] . ' Facilitator Comments');
     if ($prev_comment->comment) {    	
     	$myxls->write_string($count,$i, $prev_comment->comment);  			
 	}
