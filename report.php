@@ -114,8 +114,10 @@ if ($output == 'download') {
 				 unset($users[$user->id]);
 			}
 		}
+		$entry->notepad = $n;
 		foreach ($users as $user) {       // Remaining users
-			notepad_print_user_entry($course, $user, NULL, $s, $teachers, $grades, $myxls, $count);
+			notepad_print_user_entry($course, $user, $entry, $s, $teachers, $grades, $myxls, $count);
+			$count++;
 		}
 
 	}   

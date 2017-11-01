@@ -498,10 +498,11 @@ function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $
 	// different processing if this is an xls download
 	// set up and generate the xls
 	if ($myxls) {
+		$myxls->write_string($count, 0, $course->shortname);
+	    $myxls->write_string($count, 1, $user->lastname);	
+	    $myxls->write_string($count, 2, $user->firstname);
+
 		if ($entry) {
-	    	$myxls->write_string($count, 0, $course->shortname);
-	    	$myxls->write_string($count, 1, $user->lastname);	
-	    	$myxls->write_string($count, 2, $user->firstname);
 			$notepad  = $DB->get_record('notepad', array('id' => $entry->notepad), '*', MUST_EXIST);
         
 			if ($session) {
@@ -511,7 +512,8 @@ function notepad_print_user_entry($course, $user, $entry, $session, $teachers, $
 			}
 			notepad_print_xls($notepad, $sessions, $user, $myxls, $count);
 	    
-		}		
+		}	
+			
 		return; 
 	}
 	
