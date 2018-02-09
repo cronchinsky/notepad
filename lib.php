@@ -1013,7 +1013,7 @@ function notepad_add_question_to_form_teacher($item, &$mform, $index, $type) {
   
   $mform->addElement('html',"$item->question");
 
-  $mform->addElement('textarea', "$type-response-$item->id", '', 'wrap="virtual" rows="12" cols="100"', array('class'=> 'question'));
+  $mform->addElement('textarea', "$type-response-$item->id", '', 'wrap="virtual" rows="20" cols="100"', array('class'=> 'question'));
   
   $mform->addElement('html','</li>');
   
